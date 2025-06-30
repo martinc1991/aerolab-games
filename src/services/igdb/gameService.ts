@@ -31,6 +31,19 @@ where id = ${gameId};`
 }
 
 /**
+ * Get game information by ID
+ * @param gameId - The IGDB game ID
+ * @returns Promise<IGDBGameDetails | null>
+ */
+export async function getGameById(gameId: number): Promise<IGDBGameDetails | null> {
+	const query = `fields *;
+where id = ${gameId};`
+
+	const results = await igdbQuery<IGDBGameDetails[]>(query)
+	return results.length > 0 ? results[0] : null
+}
+
+/**
  * Search for games by name
  * @param searchTerm - The search term
  * @param limit - Maximum number of results (default: 20)

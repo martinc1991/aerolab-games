@@ -8,6 +8,7 @@ import type { IGDBGame } from '@/lib/igdb/types'
 import { useColectedGames } from '@/providers/collected-games'
 import { getIGDBImageUrl } from '@/services/igdb/imageService'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 interface AutocompleteSearchProps {
@@ -22,6 +23,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	const [showingPopular, setShowingPopular] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
+	const router = useRouter()
 
 	const { popularGames, isLoadingPopular } = useColectedGames()
 
@@ -147,6 +149,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 		setInputValue(game.name)
 		setIsOpen(false)
 		inputRef.current?.blur()
+		router.push(`/game/${game.id}`)
 	}
 
 	// Handle keyboard navigation
@@ -164,7 +167,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 			inputValue.trim().length >= 2) // Show search results when typing
 
 	return (
-		<div className='relative w-full'>
+		<div className='relative w-full sm:max-w-[358px] place-self-center'>
 			<div className='relative'>
 				<div className='absolute left-3 top-1/2 transform -translate-y-1/2 z-10'>
 					<SearchIcon size={16} color={isOpen ? 'var(--main)' : '#E7C0DB'} />
