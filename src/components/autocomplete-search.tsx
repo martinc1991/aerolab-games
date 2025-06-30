@@ -145,11 +145,14 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 
 	// Handle suggestion click
 	const handleSuggestionClick = (game: IGDBGame) => {
-		console.log('Selected game:', game.name)
+		// TODO: move outside the component
+
 		setInputValue(game.name)
 		setIsOpen(false)
 		inputRef.current?.blur()
-		router.push(`/game/${game.id}`)
+		router.push(`/game/${game.slug}`)
+
+		setInputValue('')
 	}
 
 	// Handle keyboard navigation

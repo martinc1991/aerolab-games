@@ -1,20 +1,31 @@
-import { getGameById } from '@/services/igdb/gameService'
+import { Title } from '@/components/typography/title'
+import { getGameBySlug } from '@/services/igdb/gameService'
 
 interface GamePageProps {
 	params: {
-		id: string
+		slug: string
 	}
 }
 
 export default async function GamePage({ params }: GamePageProps) {
-	const { id } = await params
-	const gameId = parseInt(id)
+	const { slug } = await params
 
-	const game = await getGameById(gameId)
+	const game = await getGameBySlug(slug)
+
+	if (!game) {
+		return <p>Game not found</p>
+	}
 
 	return (
 		<div className='space-y-4'>
-			<div>img, title, company and collect game on big screen</div>
+			<div className='flex gap-4 items-center'>
+				<div>img</div>
+				<div className='flex flex-col gap-2'>
+					<Title>{game.name}</Title>
+					<span>company</span>
+					<button>collect game</button>
+				</div>
+			</div>
 			<div>collect game small screens </div>
 			<div>badges</div>
 			<div>summary</div>
@@ -24,7 +35,7 @@ export default async function GamePage({ params }: GamePageProps) {
 			<div>Similar games </div>
 			<div className='bg-green-300 p-4 rounded'>
 				<p>
-					Game ID: <span>{id}</span>
+					Game ID: <span>{game.id}</span>
 				</p>
 				{game ? (
 					<p>

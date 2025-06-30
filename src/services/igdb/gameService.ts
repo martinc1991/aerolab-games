@@ -7,7 +7,7 @@ import type { IGDBGame, IGDBGameDetails } from '@/lib/igdb/types'
  * @returns Promise<IGDBGame[]>
  */
 export async function getPopularGames(limit: number = 10): Promise<IGDBGame[]> {
-	const query = `fields name, first_release_date, cover.image_id, total_rating, total_rating_count;
+	const query = `fields name, first_release_date, cover.image_id, total_rating, total_rating_count, slug;
 limit ${limit};
 sort total_rating desc;
 where total_rating_count > 50 & total_rating != null;`
@@ -44,22 +44,16 @@ where id = ${gameId};`
 }
 
 /**
- * Search for games by name
- * @param searchTerm - The search term
- * @param limit - Maximum number of results (default: 20)
- * @returns Promise<IGDBGame[]>
+ * Get game information by ID
+ * @param gameId - The IGDB game ID
+ * @returns Promise<IGDBGameDetails | null>
  */
-export async function searchGames(searchTerm: string, limit: number = 20): Promise<IGDBGame[]> {
-	if (!searchTerm.trim()) {
-		return []
-	}
+export async function getGameBySlug(slug: string): Promise<IGDBGameDetails | null> {
+	const query = `fields *;
+where slug = "${slug}";`
 
-	const query = `search "${searchTerm}";
-fields name, first_release_date, cover.image_id, total_rating, summary;
-limit ${limit};
-where version_parent = null;`
-
-	return igdbQuery<IGDBGame[]>(query)
+	const results = await igdbQuery<IGDBGameDetails[]>(query)
+	return results.length > 0 ? results[0] : null
 }
 
 /**
@@ -73,7 +67,7 @@ export async function getSearchSuggestions(partialName: string, limit: number = 
 		return []
 	}
 
-	const query = `fields name, cover.image_id;
+	const query = `fields name, cover.image_id, slug;
 limit ${limit};
 where name ~ *"${partialName}"* & version_parent = null;
 sort rating desc;`

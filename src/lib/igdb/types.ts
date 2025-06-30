@@ -8,6 +8,7 @@ export interface IGDBCover {
 export interface IGDBGame {
 	id: number
 	name: string
+	slug: string
 	first_release_date?: number
 	cover?: IGDBCover
 	summary?: string
