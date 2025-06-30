@@ -63,7 +63,7 @@ export async function getSearchSuggestions(partialName: string, limit: number = 
 	const query = `fields name, cover.image_id;
 limit ${limit};
 where name ~ *"${partialName}"* & version_parent = null;
-sort popularity desc;`
+sort rating desc;`
 
 	return igdbQuery<IGDBGame[]>(query)
 }

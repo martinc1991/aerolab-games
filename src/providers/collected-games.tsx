@@ -1,12 +1,15 @@
 'use client'
 
+import { getPopularGameSuggestions } from '@/lib/actions/game-actions'
 import { IGDBGame } from '@/lib/igdb/types'
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 export type TimeRange = 'last-added' | 'newest' | 'oldest'
 
 export interface CollectedGamesState {
 	sortBy: TimeRange
+	popularGames: IGDBGame[]
+	isLoadingPopular: boolean
 }
 
 export interface GamesFiltersActions {
@@ -19,6 +22,8 @@ export type CollectedGamesContextType = CollectedGamesState & GamesFiltersAction
 
 const defaultState: CollectedGamesState = {
 	sortBy: 'last-added',
+	popularGames: [],
+	isLoadingPopular: false,
 }
 
 const CollectedGamesContext = createContext<CollectedGamesContextType | undefined>(undefined)
@@ -31,6 +36,25 @@ export interface ColectedGamesProviderProps {
 export function ColectedGamesProvider({ children, initialGames = [] }: ColectedGamesProviderProps) {
 	const [sortBy, setSortBy] = useState<TimeRange>(defaultState.sortBy)
 	const [games, setGames] = useState<IGDBGame[]>(initialGames)
+	const [popularGames, setPopularGames] = useState<IGDBGame[]>(defaultState.popularGames)
+	const [isLoadingPopular, setIsLoadingPopular] = useState<boolean>(defaultState.isLoadingPopular)
+
+	// Prefetch popular games on mount
+	useEffect(() => {
+		async function fetchPopularGames() {
+			setIsLoadingPopular(true)
+			try {
+				const results = await getPopularGameSuggestions()
+				setPopularGames(results)
+			} catch (error) {
+				console.error('Failed to prefetch popular games:', error)
+			} finally {
+				setIsLoadingPopular(false)
+			}
+		}
+
+		fetchPopularGames()
+	}, [])
 
 	function handleSetSortBy(sortBy: TimeRange) {
 		setSortBy(sortBy)
@@ -56,6 +80,8 @@ export function ColectedGamesProvider({ children, initialGames = [] }: ColectedG
 		setSortBy: handleSetSortBy,
 		games,
 		setGames,
+		popularGames,
+		isLoadingPopular,
 	}
 
 	return <CollectedGamesContext.Provider value={contextValue}>{children}</CollectedGamesContext.Provider>
