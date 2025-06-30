@@ -41,7 +41,7 @@ async function igdbFetch(query: string): Promise<Response> {
  * @param query - The IGDB query string
  * @returns Promise<T>
  */
-export async function igdbQuery<T = any>(query: string): Promise<T> {
+export async function igdbQuery<T = unknown>(query: string): Promise<T> {
 	const response = await igdbFetch(query)
 	return response.json()
 }
