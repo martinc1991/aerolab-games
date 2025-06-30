@@ -1,13 +1,13 @@
 'use client'
 
 import { EmptyGames } from '@/components/empty-games'
-import TrashCan from '@/components/trash-can'
+import { TrashCan } from '@/components/trash-can'
 import { IGDBGame } from '@/lib/igdb/types'
 import { useColectedGames } from '@/providers/collected-games'
 import { getIGDBImageUrl } from '@/services/igdb'
 import Image from 'next/image'
 
-export default function GamesGallery() {
+export function GamesGallery() {
 	const { games } = useColectedGames()
 
 	if (games.length === 0) {

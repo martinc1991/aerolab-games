@@ -2,7 +2,7 @@ interface ArrowBackProps {
 	size?: number
 }
 
-export default function ArrowBack({ size = 14 }: ArrowBackProps) {
+export function ArrowBack({ size = 14 }: ArrowBackProps) {
 	return (
 		<svg width={size} height={size} viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
 			<path

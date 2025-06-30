@@ -1,9 +1,9 @@
 'use client'
 
-import ArrowBack from '@/components/arrow-back'
+import { ArrowBack } from '@/components/arrow-back'
+import { AutocompleteSearch } from '@/components/autocomplete-search'
 import { Logo } from '@/components/logo'
-import Title from '@/components/typography/title'
-import { Input } from '@/components/ui/input'
+import { Title } from '@/components/typography/title'
 import { usePathname, useRouter } from 'next/navigation'
 
 export function Header() {
@@ -12,7 +12,7 @@ export function Header() {
 	return (
 		<div className='flex flex-col gap-[20px]'>
 			{pathname === '/' ? <MainHeader /> : <GoBackHeader />}
-			<Input placeholder='Search games...' />
+			<AutocompleteSearch placeholder='Search games...' />
 		</div>
 	)
 }

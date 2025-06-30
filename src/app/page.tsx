@@ -1,6 +1,6 @@
-import GamesGallery from '@/components/games-gallery'
+import { GamesGallery } from '@/components/games-gallery'
 import { SavedGamesFilters } from '@/components/saved-games-filters'
-import Title from '@/components/typography/title'
+import { Title } from '@/components/typography/title'
 
 export default async function Home() {
 	return (

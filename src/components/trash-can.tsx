@@ -2,7 +2,7 @@ interface Props {
 	size?: number
 }
 
-export default function TrashCan({ size = 40 }: Props) {
+export function TrashCan({ size = 40 }: Props) {
 	return (
 		<svg width={size} height={size} viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
 			<rect width={size} height={size} rx='20' fill='white' fillOpacity='0.85' />
