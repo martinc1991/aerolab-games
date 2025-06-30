@@ -19,7 +19,7 @@ export function Header() {
 
 function MainHeader() {
 	return (
-		<div className='flex items-center gap-2 md:justify-center'>
+		<div className='flex items-center gap-2 sm:justify-center'>
 			<Logo />
 			<Title>Gaming Haven Z</Title>
 		</div>
@@ -30,8 +30,8 @@ function GoBackHeader() {
 	const { back } = useRouter()
 
 	return (
-		<div className='flex items-center gap-2'>
-			<button onClick={back} className='flex items-center gap-2 px-3 py-2'>
+		<div className='flex items-center gap-2 sm:w-[358px] sm:place-self-center'>
+			<button onClick={back} className='flex items-center gap-2 px-3 py-2 cursor-pointer'>
 				<ArrowBack />
 				<span className='text-[16px]'>Back</span>
 			</button>
