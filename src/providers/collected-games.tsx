@@ -35,6 +35,20 @@ export function ColectedGamesProvider({ children, initialGames = [] }: ColectedG
 	function handleSetSortBy(sortBy: TimeRange) {
 		setSortBy(sortBy)
 		// TODO: add rute params to share urls
+
+		const sortedGames = [...games].sort((a, b) => {
+			switch (sortBy) {
+				case 'newest':
+					return (b.first_release_date || 0) - (a.first_release_date || 0)
+				case 'oldest':
+					return (a.first_release_date || 0) - (b.first_release_date || 0)
+				case 'last-added':
+				default:
+					return 0
+			}
+		})
+
+		setGames(sortedGames)
 	}
 
 	const contextValue: CollectedGamesContextType = {
