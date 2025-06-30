@@ -25,6 +25,33 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 
 	const { popularGames, isLoadingPopular } = useColectedGames()
 
+	// Function to highlight matching text
+	// TODO: extract to a separate component
+	const highlightMatchingText = (text: string, searchTerm: string) => {
+		if (!searchTerm.trim() || showingPopular) {
+			return <span>{text}</span>
+		}
+
+		const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+		const parts = text.split(regex)
+
+		return (
+			<span>
+				{parts.map((part, index) => {
+					const isMatch = regex.test(part)
+					regex.lastIndex = 0 // Reset regex for next iteration
+					return isMatch ? (
+						<span className='text-pink-300' key={index}>
+							{part}
+						</span>
+					) : (
+						<span key={index}>{part}</span>
+					)
+				})}
+			</span>
+		)
+	}
+
 	// Fetch suggestions when input changes
 	useEffect(() => {
 		const fetchSuggestions = async () => {
@@ -200,7 +227,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 											<span className='text-xs text-gray-400'>?</span>
 										</div>
 									)}
-									<span className='text-sm font-medium text-gray-900 truncate flex-1'>{game.name}</span>
+									<span className='text-sm font-medium text-gray-900 truncate flex-1'>{highlightMatchingText(game.name, inputValue)}</span>
 								</button>
 							))}
 						</div>
