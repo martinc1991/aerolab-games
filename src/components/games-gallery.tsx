@@ -5,10 +5,10 @@ import { EmptyGames } from '@/components/svg/empty-games'
 import { TrashCan } from '@/components/svg/trash-can'
 import { toast } from '@/components/toast'
 import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
-import { CollectedGame, useColectedGames } from '@/providers/collected-games'
+import { CollectedGame, useCollectedGames } from '@/providers/collected-games'
 
 export function GamesGallery() {
-	const { games } = useColectedGames()
+	const { games } = useCollectedGames()
 
 	if (games.length === 0) {
 		return <EmptyState />
@@ -42,7 +42,7 @@ function EmptyState() {
 
 function GameCard({ game }: { game: CollectedGame }) {
 	const { navigateToGame } = useAppNavigation()
-	const { removeCollectedGame } = useColectedGames()
+	const { removeCollectedGame } = useCollectedGames()
 
 	function handleClick() {
 		navigateToGame(game.slug)

@@ -2,11 +2,11 @@
 
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
-import { useColectedGames } from '@/providers/collected-games'
+import { useCollectedGames } from '@/providers/collected-games'
 import { useMemo } from 'react'
 
 export function SavedGamesFilters() {
-	const { sortBy: timeRange, setSortBy: setTimeRange, games } = useColectedGames()
+	const { sortBy: timeRange, setSortBy: setTimeRange, games } = useCollectedGames()
 
 	const areThereGames = useMemo(() => games.length > 0, [games])
 

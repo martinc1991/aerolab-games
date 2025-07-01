@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { searchGameSuggestions } from '@/lib/actions/game-actions'
 import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
-import { useColectedGames } from '@/providers/collected-games'
+import { useCollectedGames } from '@/providers/collected-games'
 import { getIGDBImageUrl } from '@/services/igdb/imageService'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
@@ -25,7 +25,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const { navigateToGame } = useAppNavigation()
 
-	const { popularGames, isLoadingPopular } = useColectedGames()
+	const { popularGames, isLoadingPopular } = useCollectedGames()
 
 	// Function to highlight matching text
 	// TODO: extract to a separate component

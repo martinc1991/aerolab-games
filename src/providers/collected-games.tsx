@@ -48,7 +48,7 @@ const defaultState: CollectedGamesState = {
 
 const CollectedGamesContext = createContext<CollectedGamesContextType | undefined>(undefined)
 
-export interface ColectedGamesProviderProps {
+export interface CollectedGamesProviderProps {
 	children: ReactNode
 	initialGames?: CollectedGame[]
 }
@@ -59,7 +59,7 @@ function isValidSortBy(value: string | null): value is SortBy {
 	return value !== null && validSortBy.includes(value as SortBy)
 }
 
-export function ColectedGamesProvider({ children }: ColectedGamesProviderProps) {
+export function CollectedGamesProvider({ children }: CollectedGamesProviderProps) {
 	const gameStorage = useGameStorage()
 	const router = useRouter()
 	const searchParams = useSearchParams()
@@ -139,10 +139,10 @@ export function ColectedGamesProvider({ children }: ColectedGamesProviderProps) 
 	return <CollectedGamesContext.Provider value={contextValue}>{children}</CollectedGamesContext.Provider>
 }
 
-export function useColectedGames() {
+export function useCollectedGames() {
 	const context = useContext(CollectedGamesContext)
 	if (context === undefined) {
-		throw new Error('useColectedGames must be used within a ColectedGamesProvider')
+		throw new Error('useCollectedGames must be used within a CollectedGamesProvider')
 	}
 	return context
 }
