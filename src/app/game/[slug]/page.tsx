@@ -1,6 +1,7 @@
 import { Badge } from '@/components/badge'
 import { CollectGameButton } from '@/components/collect-game-button'
 import { GameImage } from '@/components/game-image'
+import { ScreenshotCarousel } from '@/components/screenshots-carousel'
 import { CalendarIcon } from '@/components/svg/calendar-icon'
 import { PuzzlePieceIcon } from '@/components/svg/puzzle-piece-icon'
 import { StarIcon } from '@/components/svg/star-icon'
@@ -51,7 +52,7 @@ export default async function GamePage({ params }: GamePageProps) {
 				<p className='text-[16px] font-medium leading-5 text-[#666666]'>{game.platforms.map((platform) => platform.name).join(', ')}</p>
 			</div>
 
-			<div>Media (gallery)</div>
+			<ScreenshotCarousel screenshots={game.screenshots} name={game.name} />
 
 			<div>Similar games </div>
 		</div>

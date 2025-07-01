@@ -1,0 +1,154 @@
+.embla {
+	max-width: 100%;
+	margin: 0;
+	--slide-spacing: 1rem;
+	position: relative;
+}
+
+.embla__viewport {
+	overflow: hidden;
+	border-radius: 12px;
+}
+
+.embla__container {
+	display: flex;
+	touch-action: pan-y pinch-zoom;
+	margin-left: calc(var(--slide-spacing) * -1);
+	align-items: center;
+}
+
+.embla__slide {
+	transform: translate3d(0, 0, 0);
+	flex: 0 0 auto;
+	min-width: 0;
+	padding-left: var(--slide-spacing);
+	transition: opacity 0.3s ease;
+	animation: slideIn 0.5s ease-out;
+}
+
+.embla__slide__content {
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	position: relative;
+	overflow: hidden;
+	transition: box-shadow 0.3s ease;
+}
+
+.embla__slide__content:hover {
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.embla__controls {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	padding: 0 1rem;
+	pointer-events: none;
+	z-index: 10;
+}
+
+.embla__buttons {
+	display: contents;
+}
+
+.embla__button {
+	-webkit-tap-highlight-color: transparent;
+	-webkit-appearance: none;
+	appearance: none;
+	background: rgba(255, 255, 255, 0.9);
+	backdrop-filter: blur(10px);
+	touch-action: manipulation;
+	display: inline-flex;
+	text-decoration: none;
+	cursor: pointer;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	color: #333;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+	pointer-events: auto;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.embla__button:hover {
+	background: rgba(255, 255, 255, 1);
+	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+}
+
+.embla__button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.embla__button:disabled:hover {
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.embla__button__svg {
+	width: 18px;
+	height: 18px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.embla {
+		--slide-spacing: 0.75rem;
+	}
+
+	.embla__button {
+		width: 36px;
+		height: 36px;
+	}
+
+	.embla__button__svg {
+		width: 14px;
+		height: 14px;
+	}
+}
+
+@media (max-width: 480px) {
+	.embla {
+		--slide-spacing: 0.5rem;
+	}
+
+	.embla__controls {
+		padding: 0 0.5rem;
+	}
+}
+
+/* Animation for smooth entrance */
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translate3d(20px, 0, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+}
+
+/* Utility for images inside slides */
+.embla__slide__content img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 8px;
+	display: block;
+}
