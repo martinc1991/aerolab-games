@@ -52,7 +52,14 @@ export default async function GamePage({ params }: GamePageProps) {
 				<p className='text-[16px] font-medium leading-5 text-[#666666]'>{game.platforms.map((platform) => platform.name).join(', ')}</p>
 			</div>
 
-			<ScreenshotCarousel screenshots={game.screenshots} name={game.name} />
+			<div className='flex flex-col gap-2'>
+				<span className='text-[16px] font-semibold leading-5'>Screenshots</span>
+				{game.screenshots ? (
+					<ScreenshotCarousel screenshots={game.screenshots} name={game.name} />
+				) : (
+					<p className='text-sm font-medium leading-5 text-[#666666]'>No screenshots available</p>
+				)}
+			</div>
 
 			<div>Similar games </div>
 		</div>
