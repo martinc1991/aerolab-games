@@ -15,18 +15,22 @@ export default async function GamePage({ params }: GamePageProps) {
 
 	if (!game) return <p>Game not found</p>
 
+	const developer = game.involved_companies.find((company) => company.developer)?.company.name
+
 	return (
 		<div className='space-y-4'>
-			<div className='flex gap-4 items-center'>
+			<div className='flex gap-4 items-start'>
 				<GameImage imageId={game.cover.image_id} alt={game.name} className='w-1/3' />
-				<div className='flex flex-col gap-2'>
-					<Title>{game.name}</Title>
-					<span>company</span>
-					<CollectGameButton game={game} />
+				<div className='flex flex-col gap-6'>
+					<div className='flex flex-col gap-2'>
+						<Title className='sm:text-[24px]'>{game.name}</Title>
+						{developer && <span className='text-sm text-[#775C90] leading-5'>{developer}</span>}
+					</div>
+					<CollectGameButton game={game} className='hidden sm:block w-[125px]' />
 				</div>
 			</div>
 			<div>
-				<CollectGameButton game={game} />
+				<CollectGameButton game={game} className='block sm:hidden w-full' />
 			</div>
 			<div>badges</div>
 			<div>summary</div>
@@ -34,18 +38,6 @@ export default async function GamePage({ params }: GamePageProps) {
 			<div>Media (gallery)</div>
 
 			<div>Similar games </div>
-			<div className='bg-green-300 p-4 rounded'>
-				<p>
-					Game ID: <span>{game.id}</span>
-				</p>
-				{game ? (
-					<p>
-						Game Name: <span>{game.name}</span>
-					</p>
-				) : (
-					<p>Game not found</p>
-				)}
-			</div>
 		</div>
 	)
 }

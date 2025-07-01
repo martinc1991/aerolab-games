@@ -4,17 +4,20 @@ import { toast } from '@/components/toast'
 import { Button } from '@/components/ui/button'
 import { IGDBGameDetails } from '@/lib/igdb/types'
 import { useColectedGames } from '@/providers/collected-games'
+import { HTMLAttributes } from 'react'
 
-interface CollectGameButtonProps {
+interface CollectGameButtonProps extends HTMLAttributes<HTMLButtonElement> {
 	game: IGDBGameDetails
 }
 
-export function CollectGameButton(props: CollectGameButtonProps) {
+export function CollectGameButton({ className, ...props }: CollectGameButtonProps) {
 	const { collectGame, isGameCollected } = useColectedGames()
 
 	const isCollected = isGameCollected(props.game.id)
 
 	function handleCollectGame() {
+		if (isCollected) return
+
 		collectGame(props.game)
 		toast({
 			title: 'Game collected',
@@ -23,7 +26,7 @@ export function CollectGameButton(props: CollectGameButtonProps) {
 	}
 
 	return (
-		<Button variant={isCollected ? 'collected' : 'collect'} onClick={handleCollectGame}>
+		<Button variant={isCollected ? 'collected' : 'collect'} onClick={handleCollectGame} className={className}>
 			{isCollected ? 'Collected' : 'Collect game'}
 		</Button>
 	)
