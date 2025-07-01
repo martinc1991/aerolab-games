@@ -1,2 +1,2 @@
-export * from './gameService'
+export * from './games'
 export * from './imageService'

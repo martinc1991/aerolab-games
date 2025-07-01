@@ -1,87 +1,31 @@
-export interface IGDBCover {
-	image_id: string
-	url?: string
-	width?: number
-	height?: number
-}
-
-export interface IGDBGame {
+export interface IGDBGameDetails {
 	id: number
 	name: string
 	slug: string
-	first_release_date?: number
-	cover?: IGDBCover
-	summary?: string
-	storyline?: string
-	total_rating?: number
-	total_rating_count?: number
-	genres?: IGDBGenre[]
-	platforms?: IGDBPlatform[]
-	screenshots?: IGDBScreenshot[]
-}
-
-export interface IGDBGenre {
-	id: number
-	name: string
-}
-
-export interface IGDBPlatform {
-	id: number
-	name: string
-	abbreviation?: string
-}
-
-export interface IGDBScreenshot {
-	id: number
-	image_id: string
-	url?: string
-	width?: number
-	height?: number
-}
-
-export interface IGDBSearchResult {
-	games: IGDBGame[]
-	total: number
-}
-
-export interface IGDBCompany {
-	id: number
-	name: string
-	description?: string
-	logo?: IGDBCover
-}
-
-export interface IGDBGameDetails extends IGDBGame {
-	age_ratings?: IGDBAgeRating[]
-	involved_companies?: IGDBInvolvedCompany[]
-	release_dates?: IGDBReleaseDate[]
-	similar_games?: IGDBGame[]
-	websites?: IGDBWebsite[]
-}
-
-export interface IGDBAgeRating {
-	id: number
-	category: number
+	summary: string
+	cover: { id: number; image_id: string }
+	first_release_date: number
 	rating: number
-	content_descriptions?: number[]
+	genres: Array<{ id: number; name: string }>
+	platforms: Array<{ id: number; name: string }>
+	screenshots: Array<{ id: number; image_id: string }>
+	similar_games: Array<{
+		id: number
+		cover: { id: number; image_id: string }
+		name: string
+		slug: string
+	}>
+	involved_companies: Array<{
+		id: number
+		company: { id: number; name: string }
+		developer: boolean
+		publisher: boolean
+	}>
 }
 
-export interface IGDBInvolvedCompany {
+export interface IGDBGameSearchSuggestion {
 	id: number
-	company: IGDBCompany
-	developer: boolean
-	publisher: boolean
-}
-
-export interface IGDBReleaseDate {
-	id: number
-	date: number
-	platform: IGDBPlatform
-	region: number
-}
-
-export interface IGDBWebsite {
-	id: number
-	category: number
-	url: string
+	cover: { id: number; image_id: string }
+	name: string
+	slug: string
 }

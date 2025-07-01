@@ -4,7 +4,7 @@ import { CloseIcon } from '@/components/close-icon'
 import { SearchIcon } from '@/components/search-icon'
 import { Input } from '@/components/ui/input'
 import { searchGameSuggestions } from '@/lib/actions/game-actions'
-import type { IGDBGame } from '@/lib/igdb/types'
+import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { useColectedGames } from '@/providers/collected-games'
 import { getIGDBImageUrl } from '@/services/igdb/imageService'
 import Image from 'next/image'
@@ -17,7 +17,7 @@ interface AutocompleteSearchProps {
 
 export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	const [inputValue, setInputValue] = useState('')
-	const [suggestions, setSuggestions] = useState<IGDBGame[]>([])
+	const [suggestions, setSuggestions] = useState<IGDBGameSearchSuggestion[]>([])
 	const [isOpen, setIsOpen] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const [showingPopular, setShowingPopular] = useState(false)
@@ -60,7 +60,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 			if (inputValue.trim().length === 0) {
 				// Show prefetched popular games when input is empty
 				if (isOpen) {
-					setSuggestions(popularGames)
+					setSuggestions(popularGames) // FIXME: types
 					setShowingPopular(true)
 					setIsLoading(isLoadingPopular)
 				}
@@ -144,7 +144,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	}
 
 	// Handle suggestion click
-	const handleSuggestionClick = (game: IGDBGame) => {
+	const handleSuggestionClick = (game: IGDBGameSearchSuggestion) => {
 		// TODO: move outside the component
 
 		setInputValue(game.name)

@@ -1,27 +1,39 @@
 'use client'
 
 import { getPopularGameSuggestions } from '@/lib/actions/game-actions'
-import { IGDBGame } from '@/lib/igdb/types'
+import { useGameStorage } from '@/lib/hooks/use-game-storage'
+import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 export type TimeRange = 'last-added' | 'newest' | 'oldest'
 
+export interface CollectedGame {
+	id: number
+	dateCollected: number
+	dateReleased: number
+	name: string
+	slug: string
+	cover: { id: number; image_id: string }
+}
+
 export interface CollectedGamesState {
 	sortBy: TimeRange
-	popularGames: IGDBGame[]
+	games: CollectedGame[]
+	popularGames: IGDBGameSearchSuggestion[]
 	isLoadingPopular: boolean
 }
 
 export interface GamesFiltersActions {
 	setSortBy: (sortBy: TimeRange) => void
-	games: IGDBGame[]
-	setGames: (games: IGDBGame[]) => void
+	setGames: (games: CollectedGame[]) => void
+	setPopularGames: (popularGames: IGDBGameSearchSuggestion[]) => void
 }
 
 export type CollectedGamesContextType = CollectedGamesState & GamesFiltersActions
 
 const defaultState: CollectedGamesState = {
 	sortBy: 'last-added',
+	games: [],
 	popularGames: [],
 	isLoadingPopular: false,
 }
@@ -30,16 +42,16 @@ const CollectedGamesContext = createContext<CollectedGamesContextType | undefine
 
 export interface ColectedGamesProviderProps {
 	children: ReactNode
-	initialGames?: IGDBGame[]
+	initialGames?: CollectedGame[]
 }
 
-export function ColectedGamesProvider({ children, initialGames = [] }: ColectedGamesProviderProps) {
+export function ColectedGamesProvider({ children }: ColectedGamesProviderProps) {
+	const gameStorage = useGameStorage()
+	const [games, setGames] = useState<CollectedGame[]>(gameStorage.games)
 	const [sortBy, setSortBy] = useState<TimeRange>(defaultState.sortBy)
-	const [games, setGames] = useState<IGDBGame[]>(initialGames)
-	const [popularGames, setPopularGames] = useState<IGDBGame[]>(defaultState.popularGames)
+	const [popularGames, setPopularGames] = useState<IGDBGameSearchSuggestion[]>(defaultState.popularGames)
 	const [isLoadingPopular, setIsLoadingPopular] = useState<boolean>(defaultState.isLoadingPopular)
 
-	// Prefetch popular games on mount
 	useEffect(() => {
 		async function fetchPopularGames() {
 			setIsLoadingPopular(true)
@@ -54,21 +66,23 @@ export function ColectedGamesProvider({ children, initialGames = [] }: ColectedG
 		}
 
 		fetchPopularGames()
+
+		handleSetSortBy('last-added')
 	}, [])
 
 	function handleSetSortBy(sortBy: TimeRange) {
 		setSortBy(sortBy)
 		// TODO: add rute params to share urls
 
-		const sortedGames = [...games].sort((a, b) => {
+		const sortedGames = games.sort((a, b) => {
 			switch (sortBy) {
 				case 'newest':
-					return (b.first_release_date || 0) - (a.first_release_date || 0)
+					return (b.dateReleased || 0) - (a.dateReleased || 0)
 				case 'oldest':
-					return (a.first_release_date || 0) - (b.first_release_date || 0)
+					return (a.dateReleased || 0) - (b.dateReleased || 0)
 				case 'last-added':
 				default:
-					return 0
+					return b.dateCollected - a.dateCollected
 			}
 		})
 
@@ -81,6 +95,7 @@ export function ColectedGamesProvider({ children, initialGames = [] }: ColectedG
 		games,
 		setGames,
 		popularGames,
+		setPopularGames,
 		isLoadingPopular,
 	}
 

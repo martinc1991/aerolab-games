@@ -1,6 +1,6 @@
 import { CollectGameButton } from '@/components/collect-game-button'
 import { Title } from '@/components/typography/title'
-import { getGameBySlug } from '@/services/igdb/gameService'
+import { getGameBySlug } from '@/services/igdb/games/get-details'
 
 interface GamePageProps {
 	params: {

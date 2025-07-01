@@ -2,10 +2,10 @@
 
 import { Button } from '@/components/ui/button'
 import { useGameStorage } from '@/lib/hooks/use-game-storage'
-import { IGDBGame } from '@/lib/igdb/types'
+import { IGDBGameDetails } from '@/lib/igdb/types'
 
 interface CollectGameButtonProps {
-	game: IGDBGame
+	game: IGDBGameDetails
 }
 
 export function CollectGameButton(props: CollectGameButtonProps) {

@@ -1,18 +1,12 @@
 import { LOCAL_STORAGE_COLLECTED_GAMES_KEY } from '@/config/constants'
-import { IGDBGame } from '@/lib/igdb/types'
-import { getIGDBImageUrl } from '@/services/igdb'
+import { IGDBGameDetails } from '@/lib/igdb/types'
+import { CollectedGame } from '@/providers/collected-games'
 import { useCallback } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
-export interface CollectedGame {
-	id: number
-	dateCollected: number
-	image: string
-}
-
 export interface UseCollectedGamesReturn {
 	games: CollectedGame[]
-	collectGame: (game: IGDBGame) => boolean
+	collectGame: (game: IGDBGameDetails) => boolean
 	removeCollectedGame: (gameId: number) => boolean
 	isGameCollected: (gameId: number) => boolean
 }
@@ -27,7 +21,7 @@ export function useGameStorage(): UseCollectedGamesReturn {
 	const [collectedGames, setCollectedGames] = useLocalStorage<CollectedGame[]>(LOCAL_STORAGE_COLLECTED_GAMES_KEY, [])
 
 	const collectGame = useCallback(
-		(game: IGDBGame): boolean => {
+		(game: IGDBGameDetails): boolean => {
 			const isAlreadyCollected = collectedGames.some((cgame) => cgame.id === game.id)
 
 			if (isAlreadyCollected) {
@@ -38,7 +32,13 @@ export function useGameStorage(): UseCollectedGamesReturn {
 			const newGame: CollectedGame = {
 				id: game.id,
 				dateCollected: Date.now(),
-				image: getIGDBImageUrl(game.cover?.image_id ?? '', 'cover_big'),
+				dateReleased: game.first_release_date,
+				name: game.name,
+				slug: game.slug,
+				cover: {
+					id: game.cover.id,
+					image_id: game.cover.image_id,
+				},
 			}
 
 			setCollectedGames((prev) => [...prev, newGame])
