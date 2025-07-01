@@ -125,7 +125,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	}
 
 	// Handle input blur
-	const handleBlur = (e: React.FocusEvent) => {
+	const handleBlur = () => {
 		// Delay hiding to allow for clicks on suggestions
 		setTimeout(() => {
 			if (!dropdownRef.current?.contains(document.activeElement)) {
@@ -213,7 +213,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 						</div>
 					) : suggestions.length > 0 ? (
 						<div className='p-2'>
-							{suggestions.map((game, index) => (
+							{suggestions.map((game) => (
 								<button
 									key={game.id}
 									className={`w-full h-[42px] flex gap-2 items-center p-2 hover:bg-gray-50 transition-colors text-left cursor-pointer`}

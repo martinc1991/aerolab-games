@@ -14,7 +14,7 @@ export function CollectGameButton(props: CollectGameButtonProps) {
 	const isCollected = isGameCollected(props.game.id)
 
 	return (
-		<Button variant={isCollected ? 'collected' : 'collect'} onClick={(e) => collectGame(props.game)}>
+		<Button variant={isCollected ? 'collected' : 'collect'} onClick={() => collectGame(props.game)}>
 			{isCollected ? 'Collected' : 'Collect game'}
 		</Button>
 	)
