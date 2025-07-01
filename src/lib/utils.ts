@@ -4,3 +4,26 @@ import { twMerge } from 'tailwind-merge'
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
+
+/**
+ * Formats an IGDB rating from a 0-100 scale to a 0-10 scale with one decimal place
+ * @param rating - The rating value from IGDB (0-100)
+ * @returns The formatted rating as a string with one decimal place (0.0-10.0)
+ */
+export function formatIGDBRating(rating: number) {
+	return (rating / 10).toFixed(1)
+}
+
+/**
+ * Formats a Unix timestamp into a localized date string
+ * @param date - Unix timestamp in seconds
+ * @returns Formatted date string in MM/DD/YYYY format
+ */
+export function formatIGDBTimestamp(timestamp: number) {
+	const date = new Date(timestamp * 1000)
+	const month = String(date.getMonth() + 1)
+	const day = String(date.getDate())
+	const year = date.getFullYear()
+
+	return `${month}/${day}/${year}`
+}

@@ -1,6 +1,11 @@
+import { Badge } from '@/components/badge'
 import { CollectGameButton } from '@/components/collect-game-button'
 import { GameImage } from '@/components/game-image'
+import { CalendarIcon } from '@/components/svg/calendar-icon'
+import { PuzzlePieceIcon } from '@/components/svg/puzzle-piece-icon'
+import { StarIcon } from '@/components/svg/star-icon'
 import { Title } from '@/components/typography/title'
+import { formatIGDBRating, formatIGDBTimestamp } from '@/lib/utils'
 import { getGameBySlug } from '@/services/igdb/games/get-details'
 
 interface GamePageProps {
@@ -32,7 +37,11 @@ export default async function GamePage({ params }: GamePageProps) {
 			<div>
 				<CollectGameButton game={game} className='block sm:hidden w-full' />
 			</div>
-			<div>badges</div>
+			<div className='flex gap-2 flex-wrap'>
+				<Badge icon={<StarIcon />} title='Rating' value={formatIGDBRating(game.rating)} />
+				<Badge icon={<CalendarIcon />} title='Release Date' value={formatIGDBTimestamp(game.first_release_date)} />
+				<Badge icon={<PuzzlePieceIcon />} title='Genre' value={game.genres.map((genre) => genre.name).join(', ')} />
+			</div>
 			<div>summary</div>
 			<div>platforms</div>
 			<div>Media (gallery)</div>
