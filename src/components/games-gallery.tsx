@@ -1,9 +1,9 @@
 'use client'
 
-import { EmptyGames } from '@/components/empty-games'
 import { GameImage } from '@/components/game-image'
+import { EmptyGames } from '@/components/svg/empty-games'
+import { TrashCan } from '@/components/svg/trash-can'
 import { toast } from '@/components/toast'
-import { TrashCan } from '@/components/trash-can'
 import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
 import { CollectedGame, useColectedGames } from '@/providers/collected-games'
 

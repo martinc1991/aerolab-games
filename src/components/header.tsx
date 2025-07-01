@@ -1,8 +1,8 @@
 'use client'
 
-import { ArrowBack } from '@/components/arrow-back'
 import { AutocompleteSearch } from '@/components/autocomplete-search'
-import { Logo } from '@/components/logo'
+import { ArrowBack } from '@/components/svg/arrow-back'
+import { Logo } from '@/components/svg/logo'
 import { Title } from '@/components/typography/title'
 import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
 import { usePathname } from 'next/navigation'

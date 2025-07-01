@@ -1,7 +1,7 @@
 'use client'
 
-import { CloseIcon } from '@/components/close-icon'
-import { SearchIcon } from '@/components/search-icon'
+import { CloseIcon } from '@/components/svg/close-icon'
+import { SearchIcon } from '@/components/svg/search-icon'
 import { Input } from '@/components/ui/input'
 import { searchGameSuggestions } from '@/lib/actions/game-actions'
 import { useAppNavigation } from '@/lib/hooks/use-app-navigation'

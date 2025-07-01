@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckIcon } from '@/components/check-icon'
+import { CheckIcon } from '@/components/svg/check-icon'
 import { toast as sonnerToast } from 'sonner'
 
 export function toast(toast: Omit<ToastProps, 'id'>) {
