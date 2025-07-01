@@ -1,3 +1,4 @@
+import { CollectGameButton } from '@/components/collect-game-button'
 import { Title } from '@/components/typography/title'
 import { getGameBySlug } from '@/services/igdb/gameService'
 
@@ -23,10 +24,12 @@ export default async function GamePage({ params }: GamePageProps) {
 				<div className='flex flex-col gap-2'>
 					<Title>{game.name}</Title>
 					<span>company</span>
-					<button>collect game</button>
+					<CollectGameButton game={game} />
 				</div>
 			</div>
-			<div>collect game small screens </div>
+			<div>
+				<CollectGameButton game={game} />
+			</div>
 			<div>badges</div>
 			<div>summary</div>
 			<div>platforms</div>
