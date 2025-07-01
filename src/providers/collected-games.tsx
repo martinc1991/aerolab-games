@@ -2,10 +2,16 @@
 
 import { getPopularGameSuggestions } from '@/lib/actions/game-actions'
 import { useGameStorage } from '@/lib/hooks/use-game-storage'
-import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { IGDBGameDetails, IGDBGameSearchSuggestion } from '@/lib/igdb/types'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
-export type TimeRange = 'last-added' | 'newest' | 'oldest'
+enum SortBy {
+	LAST_ADDED = 'last-added',
+	NEWEST = 'newest',
+	OLDEST = 'oldest',
+}
+const SORT_BY_PARAM = 'sortBy'
 
 export interface CollectedGame {
 	id: number
@@ -17,22 +23,24 @@ export interface CollectedGame {
 }
 
 export interface CollectedGamesState {
-	sortBy: TimeRange
+	sortBy: SortBy
 	games: CollectedGame[]
 	popularGames: IGDBGameSearchSuggestion[]
 	isLoadingPopular: boolean
 }
 
-export interface GamesFiltersActions {
-	setSortBy: (sortBy: TimeRange) => void
-	setGames: (games: CollectedGame[]) => void
+export interface GamesActions {
+	setSortBy: (sortBy: SortBy) => void
 	setPopularGames: (popularGames: IGDBGameSearchSuggestion[]) => void
+	collectGame: (game: IGDBGameDetails) => void
+	removeCollectedGame: (gameId: number) => boolean
+	isGameCollected: (gameId: number) => boolean
 }
 
-export type CollectedGamesContextType = CollectedGamesState & GamesFiltersActions
+export type CollectedGamesContextType = CollectedGamesState & GamesActions
 
 const defaultState: CollectedGamesState = {
-	sortBy: 'last-added',
+	sortBy: SortBy.LAST_ADDED,
 	games: [],
 	popularGames: [],
 	isLoadingPopular: false,
@@ -45,12 +53,41 @@ export interface ColectedGamesProviderProps {
 	initialGames?: CollectedGame[]
 }
 
+const validSortBy = [SortBy.LAST_ADDED, SortBy.NEWEST, SortBy.OLDEST] as const
+
+function isValidSortBy(value: string | null): value is SortBy {
+	return value !== null && validSortBy.includes(value as SortBy)
+}
+
 export function ColectedGamesProvider({ children }: ColectedGamesProviderProps) {
 	const gameStorage = useGameStorage()
-	const [games, setGames] = useState<CollectedGame[]>(gameStorage.games)
-	const [sortBy, setSortBy] = useState<TimeRange>(defaultState.sortBy)
+	const router = useRouter()
+	const searchParams = useSearchParams()
+
+	const initialSortBy = (() => {
+		const urlSortBy = searchParams.get(SORT_BY_PARAM)
+		return isValidSortBy(urlSortBy) ? urlSortBy : defaultState.sortBy
+	})()
+
+	const [sortBy, setSortBy] = useState<SortBy>(initialSortBy)
 	const [popularGames, setPopularGames] = useState<IGDBGameSearchSuggestion[]>(defaultState.popularGames)
 	const [isLoadingPopular, setIsLoadingPopular] = useState<boolean>(defaultState.isLoadingPopular)
+
+	const sortedGames = useMemo(() => {
+		const gamesCopy = [...gameStorage.games]
+
+		return gamesCopy.sort((a, b) => {
+			switch (sortBy) {
+				case SortBy.NEWEST:
+					return b.dateReleased - a.dateReleased
+				case SortBy.OLDEST:
+					return a.dateReleased - b.dateReleased
+				case SortBy.LAST_ADDED:
+				default:
+					return b.dateCollected - a.dateCollected
+			}
+		})
+	}, [gameStorage.games, sortBy])
 
 	useEffect(() => {
 		async function fetchPopularGames() {
@@ -66,37 +103,37 @@ export function ColectedGamesProvider({ children }: ColectedGamesProviderProps) 
 		}
 
 		fetchPopularGames()
-
-		handleSetSortBy('last-added')
 	}, [])
 
-	function handleSetSortBy(sortBy: TimeRange) {
-		setSortBy(sortBy)
-		// TODO: add rute params to share urls
+	useEffect(() => {
+		const urlSortBy = searchParams.get(SORT_BY_PARAM)
 
-		const sortedGames = games.sort((a, b) => {
-			switch (sortBy) {
-				case 'newest':
-					return (b.dateReleased || 0) - (a.dateReleased || 0)
-				case 'oldest':
-					return (a.dateReleased || 0) - (b.dateReleased || 0)
-				case 'last-added':
-				default:
-					return b.dateCollected - a.dateCollected
-			}
-		})
+		if (urlSortBy && !isValidSortBy(urlSortBy)) {
+			router.replace(window.location.pathname)
+		}
+	}, [searchParams, router])
 
-		setGames(sortedGames)
+	function handleSetSortBy(newSortBy: SortBy) {
+		setSortBy(newSortBy)
+
+		const current = new URLSearchParams(Array.from(searchParams.entries()))
+		current.set(SORT_BY_PARAM, newSortBy)
+		const search = current.toString()
+		const query = search ? `?${search}` : ''
+
+		router.replace(`${window.location.pathname}${query}`)
 	}
 
 	const contextValue: CollectedGamesContextType = {
 		sortBy,
 		setSortBy: handleSetSortBy,
-		games,
-		setGames,
+		games: sortedGames,
 		popularGames,
 		setPopularGames,
 		isLoadingPopular,
+		collectGame: gameStorage.collectGame,
+		removeCollectedGame: gameStorage.removeCollectedGame,
+		isGameCollected: gameStorage.isGameCollected,
 	}
 
 	return <CollectedGamesContext.Provider value={contextValue}>{children}</CollectedGamesContext.Provider>
@@ -105,7 +142,7 @@ export function ColectedGamesProvider({ children }: ColectedGamesProviderProps) 
 export function useColectedGames() {
 	const context = useContext(CollectedGamesContext)
 	if (context === undefined) {
-		throw new Error('useGamesFilters must be used within a GamesFiltersProvider')
+		throw new Error('useColectedGames must be used within a ColectedGamesProvider')
 	}
 	return context
 }
