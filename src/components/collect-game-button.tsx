@@ -1,7 +1,7 @@
 'use client'
 
+import { toast } from '@/components/toast'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/toast'
 import { IGDBGameDetails } from '@/lib/igdb/types'
 import { useColectedGames } from '@/providers/collected-games'
 

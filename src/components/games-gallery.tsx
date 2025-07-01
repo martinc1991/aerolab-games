@@ -1,6 +1,7 @@
 'use client'
 
 import { EmptyGames } from '@/components/empty-games'
+import { toast } from '@/components/toast'
 import { TrashCan } from '@/components/trash-can'
 import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
 import { CollectedGame, useColectedGames } from '@/providers/collected-games'
@@ -42,11 +43,26 @@ function EmptyState() {
 
 function GameCard({ game }: { game: CollectedGame }) {
 	const { navigateToGame } = useAppNavigation()
+	const { removeCollectedGame } = useColectedGames()
+
+	const src = getIGDBImageUrl(game.cover?.image_id ?? '', '720p')
+
+	function handleClick() {
+		navigateToGame(game.slug)
+	}
+
+	function handleRemoveGame() {
+		removeCollectedGame(game.id)
+		toast({
+			title: 'Game deleted',
+			description: `${game.name} has been removed from your collection`,
+		})
+	}
 
 	return (
 		<div className='relative cursor-pointer'>
 			<Image
-				src={getIGDBImageUrl(game.cover?.image_id ?? '', '720p')}
+				src={src}
 				// TODO: improve loading
 				// placeholder='blur'
 				// blurDataURL={getIGDBImageUrl(game.cover?.image_id ?? '', 'thumb')}
@@ -54,13 +70,13 @@ function GameCard({ game }: { game: CollectedGame }) {
 				width={264}
 				height={374}
 				className='object-cover rounded-[8px]'
-				onClick={() => navigateToGame(game.slug)}
+				onClick={handleClick}
 			/>
 			<div
 				className='absolute bottom-2 right-2 hover:opacity-80 transition-opacity duration-200'
 				onClick={(e) => {
 					e.stopPropagation()
-					console.log('Delete', game.name)
+					handleRemoveGame()
 				}}
 			>
 				<TrashCan />
