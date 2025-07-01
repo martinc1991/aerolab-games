@@ -18,7 +18,7 @@ export type IGDBImageSize =
  * @param size - The desired image size
  * @returns Complete image URL
  */
-export function getIGDBImageUrl(imageId: string, size: IGDBImageSize = 'cover_big'): string {
+export function getIGDBImageUrl(imageId: string, size: IGDBImageSize = '720p'): string {
 	return `${IGDB_IMAGE_BASE_URL}/t_${size}/${imageId}.jpg`
 }
 
