@@ -23,7 +23,7 @@ export default async function GamePage({ params }: GamePageProps) {
 	const developer = game.involved_companies.find((company) => company.developer)?.company.name
 
 	return (
-		<div className='space-y-4'>
+		<div className='space-y-6'>
 			<div className='flex gap-4 items-start'>
 				<GameImage imageId={game.cover.image_id} alt={game.name} className='w-1/3' />
 				<div className='flex flex-col gap-6'>
@@ -42,8 +42,15 @@ export default async function GamePage({ params }: GamePageProps) {
 				<Badge icon={<CalendarIcon />} title='Release Date' value={formatIGDBTimestamp(game.first_release_date)} />
 				<Badge icon={<PuzzlePieceIcon />} title='Genre' value={game.genres.map((genre) => genre.name).join(', ')} />
 			</div>
-			<div>summary</div>
-			<div>platforms</div>
+			<div className='flex flex-col gap-2'>
+				<span className='text-[16px] font-semibold leading-5'>Summary</span>
+				<p className='text-[16px] font-medium leading-5 text-[#666666]'>{game.summary}</p>
+			</div>
+			<div className='flex flex-col gap-2'>
+				<span className='text-[16px] font-semibold leading-5'>Platforms</span>
+				<p className='text-[16px] font-medium leading-5 text-[#666666]'>{game.platforms.map((platform) => platform.name).join(', ')}</p>
+			</div>
+
 			<div>Media (gallery)</div>
 
 			<div>Similar games </div>
