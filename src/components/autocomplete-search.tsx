@@ -4,11 +4,11 @@ import { CloseIcon } from '@/components/close-icon'
 import { SearchIcon } from '@/components/search-icon'
 import { Input } from '@/components/ui/input'
 import { searchGameSuggestions } from '@/lib/actions/game-actions'
+import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { useColectedGames } from '@/providers/collected-games'
 import { getIGDBImageUrl } from '@/services/igdb/imageService'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 interface AutocompleteSearchProps {
@@ -23,7 +23,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	const [showingPopular, setShowingPopular] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
-	const router = useRouter()
+	const { navigateToGame } = useAppNavigation()
 
 	const { popularGames, isLoadingPopular } = useColectedGames()
 
@@ -150,7 +150,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 		setInputValue(game.name)
 		setIsOpen(false)
 		inputRef.current?.blur()
-		router.push(`/game/${game.slug}`)
+		navigateToGame(game.slug)
 
 		setInputValue('')
 	}

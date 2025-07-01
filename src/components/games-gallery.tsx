@@ -2,6 +2,7 @@
 
 import { EmptyGames } from '@/components/empty-games'
 import { TrashCan } from '@/components/trash-can'
+import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
 import { CollectedGame, useColectedGames } from '@/providers/collected-games'
 import { getIGDBImageUrl } from '@/services/igdb'
 import Image from 'next/image'
@@ -40,8 +41,10 @@ function EmptyState() {
 }
 
 function GameCard({ game }: { game: CollectedGame }) {
+	const { navigateToGame } = useAppNavigation()
+
 	return (
-		<div className='relative'>
+		<div className='relative cursor-pointer'>
 			<Image
 				src={getIGDBImageUrl(game.cover?.image_id ?? '', '720p')}
 				// TODO: improve loading
@@ -51,14 +54,12 @@ function GameCard({ game }: { game: CollectedGame }) {
 				width={264}
 				height={374}
 				className='object-cover rounded-[8px]'
-				onClick={() => {
-					console.log(game.name)
-				}}
+				onClick={() => navigateToGame(game.slug)}
 			/>
 			<div
-				className='absolute bottom-2 right-2 cursor-pointer hover:opacity-80 transition-opacity duration-200'
+				className='absolute bottom-2 right-2 hover:opacity-80 transition-opacity duration-200'
 				onClick={(e) => {
-					e.preventDefault()
+					e.stopPropagation()
 					console.log('Delete', game.name)
 				}}
 			>

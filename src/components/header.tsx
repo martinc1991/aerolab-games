@@ -4,7 +4,8 @@ import { ArrowBack } from '@/components/arrow-back'
 import { AutocompleteSearch } from '@/components/autocomplete-search'
 import { Logo } from '@/components/logo'
 import { Title } from '@/components/typography/title'
-import { usePathname, useRouter } from 'next/navigation'
+import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
+import { usePathname } from 'next/navigation'
 
 export function Header() {
 	const pathname = usePathname()
@@ -27,11 +28,11 @@ function MainHeader() {
 }
 
 function GoBackHeader() {
-	const { back } = useRouter()
+	const { goBack } = useAppNavigation()
 
 	return (
 		<div className='flex items-center gap-2 sm:w-[358px] sm:place-self-center'>
-			<button onClick={back} className='flex items-center gap-2 px-3 py-2 cursor-pointer'>
+			<button onClick={goBack} className='flex items-center gap-2 px-3 py-2 cursor-pointer'>
 				<ArrowBack />
 				<span className='text-[16px]'>Back</span>
 			</button>
