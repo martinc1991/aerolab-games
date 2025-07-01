@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body className={`${inter.className} antialiased h-screen`}>
+			<body className={`${inter.className} antialiased h-fit`}>
 				<RootProvider>
 					<main className='flex flex-col gap-6 my-4 p-4 max-w-3xl mx-auto'>
 						<div className='w-full'>
