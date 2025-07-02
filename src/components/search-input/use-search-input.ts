@@ -1,7 +1,8 @@
 import { searchGameSuggestions } from '@/lib/actions/game-actions'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { useCollectedGames } from '@/providers/collected-games'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useDebounceCallback } from 'usehooks-ts'
 
 export function useSearchInput() {
 	const [inputValue, setInputValue] = useState('')
@@ -14,10 +15,9 @@ export function useSearchInput() {
 
 	const { popularGames, isLoadingPopular } = useCollectedGames()
 
-	// Fetch suggestions when input changes
-	useEffect(() => {
-		const fetchSuggestions = async () => {
-			if (inputValue.trim().length === 0) {
+	const fetchSuggestions = useCallback(
+		async (searchTerm: string) => {
+			if (searchTerm.trim().length === 0) {
 				// Show prefetched popular games when input is empty
 				if (isOpen) {
 					setSuggestions(popularGames)
@@ -27,7 +27,7 @@ export function useSearchInput() {
 				return
 			}
 
-			if (inputValue.trim().length < 2) {
+			if (searchTerm.trim().length < 2) {
 				setSuggestions([])
 				setShowingPopular(false)
 				return
@@ -36,7 +36,7 @@ export function useSearchInput() {
 			setIsLoading(true)
 			setShowingPopular(false)
 			try {
-				const results = await searchGameSuggestions(inputValue)
+				const results = await searchGameSuggestions(searchTerm)
 				setSuggestions(results)
 			} catch (error) {
 				console.error('Failed to fetch suggestions:', error)
@@ -44,11 +44,15 @@ export function useSearchInput() {
 			} finally {
 				setIsLoading(false)
 			}
-		}
+		},
+		[isOpen, popularGames, isLoadingPopular]
+	)
 
-		const timeoutId = setTimeout(fetchSuggestions, 300) // Debounce
-		return () => clearTimeout(timeoutId)
-	}, [inputValue, popularGames, isLoadingPopular, isOpen])
+	const debouncedFetchSuggestions = useDebounceCallback(fetchSuggestions, 300)
+
+	useEffect(() => {
+		debouncedFetchSuggestions(inputValue)
+	}, [inputValue, debouncedFetchSuggestions])
 
 	// Event handlers
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,16 +73,9 @@ export function useSearchInput() {
 		else if (inputValue.trim().length >= 2) {
 			setShowingPopular(false)
 			if (suggestions.length === 0 && !isLoading) {
-				setIsLoading(true)
-				try {
-					const results = await searchGameSuggestions(inputValue)
-					setSuggestions(results)
-				} catch (error) {
-					console.error('Failed to fetch suggestions on focus:', error)
-					setSuggestions([])
-				} finally {
-					setIsLoading(false)
-				}
+				// Cancel any pending debounced calls and fetch immediately
+				debouncedFetchSuggestions.cancel()
+				await fetchSuggestions(inputValue)
 			}
 		}
 	}
@@ -92,6 +89,8 @@ export function useSearchInput() {
 	}
 
 	const handleClear = () => {
+		debouncedFetchSuggestions.cancel()
+
 		setInputValue('')
 		setSuggestions([])
 		setShowingPopular(false)
@@ -108,6 +107,7 @@ export function useSearchInput() {
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === 'Escape') {
+			debouncedFetchSuggestions.cancel()
 			setIsOpen(false)
 			inputRef.current?.blur()
 		}
