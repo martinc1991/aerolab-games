@@ -16,7 +16,7 @@ export function CollectedGamesGallery() {
 		})
 	}
 
-	return <GamesGallery games={games} onDelete={handleDelete} emptyState={<EmptyState />} />
+	return <GamesGallery games={games} onDelete={handleDelete} emptyState={<EmptyState />} priority />
 }
 
 function EmptyState() {

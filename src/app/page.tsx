@@ -1,4 +1,4 @@
-import { CollectedGamesGallery } from '@/components/collected-games'
+import { CollectedGamesGallery } from '@/components/collected-games-gallery'
 import { SavedGamesFilters } from '@/components/saved-games-filters'
 import { Title } from '@/components/typography/title'
 

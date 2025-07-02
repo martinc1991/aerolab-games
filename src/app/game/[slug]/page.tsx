@@ -27,7 +27,7 @@ export default async function GamePage({ params }: GamePageProps) {
 	return (
 		<div className='space-y-6'>
 			<div className='flex gap-4 items-start'>
-				<GameImage imageId={game.cover.image_id} alt={game.name} className='w-1/3' />
+				<GameImage imageId={game.cover.image_id} alt={game.name} className='w-1/3' priority />
 				<div className='flex flex-col gap-6'>
 					<div className='flex flex-col gap-2'>
 						<Title className='sm:text-[24px]'>{game.name}</Title>
