@@ -1,6 +1,6 @@
 import { ComponentPropsWithRef } from 'react'
 
-interface ButtonProps extends ComponentPropsWithRef<'button'> {}
+type ButtonProps = ComponentPropsWithRef<'button'>
 
 function BaseButton(props: ButtonProps) {
 	return <button className='embla__button' type='button' {...props} />
