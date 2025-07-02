@@ -1,6 +1,6 @@
 'use client'
 
-import { Logo } from '@/components/svg/logo'
+import { LoadingSpinner } from '@/components/loading-spinner'
 import { getPopularGameSuggestions } from '@/lib/actions/game-actions'
 import { useGameStorage } from '@/lib/hooks/use-game-storage'
 import { IGDBGameDetails, IGDBGameSearchSuggestion } from '@/lib/igdb/types'
@@ -158,10 +158,8 @@ export function useCollectedGames() {
 
 function Loading() {
 	return (
-		<div className='flex items-center justify-center h-screen'>
-			<div className='animate-spin'>
-				<Logo />
-			</div>
+		<div className='flex items-center justify-center h-[calc(100vh-200px)]'>
+			<LoadingSpinner />
 		</div>
 	)
 }
