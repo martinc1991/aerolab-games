@@ -1,10 +1,11 @@
 'use client'
 
+import { Logo } from '@/components/svg/logo'
 import { getPopularGameSuggestions } from '@/lib/actions/game-actions'
 import { useGameStorage } from '@/lib/hooks/use-game-storage'
 import { IGDBGameDetails, IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, Suspense, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
 enum SortBy {
 	LAST_ADDED = 'last-added',
@@ -59,7 +60,7 @@ function isValidSortBy(value: string | null): value is SortBy {
 	return value !== null && validSortBy.includes(value as SortBy)
 }
 
-export function CollectedGamesProvider({ children }: CollectedGamesProviderProps) {
+function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 	const gameStorage = useGameStorage()
 	const router = useRouter()
 	const searchParams = useSearchParams()
@@ -139,10 +140,28 @@ export function CollectedGamesProvider({ children }: CollectedGamesProviderProps
 	return <CollectedGamesContext.Provider value={contextValue}>{children}</CollectedGamesContext.Provider>
 }
 
+export function CollectedGamesProvider({ children }: CollectedGamesProviderProps) {
+	return (
+		<Suspense fallback={<Loading />}>
+			<CollectedGamesProviderInner>{children}</CollectedGamesProviderInner>
+		</Suspense>
+	)
+}
+
 export function useCollectedGames() {
 	const context = useContext(CollectedGamesContext)
 	if (context === undefined) {
 		throw new Error('useCollectedGames must be used within a CollectedGamesProvider')
 	}
 	return context
+}
+
+function Loading() {
+	return (
+		<div className='flex items-center justify-center h-screen'>
+			<div className='animate-spin'>
+				<Logo />
+			</div>
+		</div>
+	)
 }
