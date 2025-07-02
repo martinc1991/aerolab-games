@@ -8,10 +8,10 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
 		<div className='flex flex-col items-center space-y-6 gap-6 mt-10'>
 			<Title>Something went wrong.</Title>
 			<div className='flex gap-4'>
-				<Button className='bg-main' onClick={reset}>
+				<Button className='bg-main hover:bg-main/60 hover:cursor-pointer' onClick={reset}>
 					Try again
 				</Button>
-				<Button className='bg-main' onClick={() => (window.location.href = '/')}>
+				<Button className='bg-main hover:bg-main/60 hover:cursor-pointer' onClick={() => (window.location.href = '/')}>
 					Go home
 				</Button>
 			</div>
