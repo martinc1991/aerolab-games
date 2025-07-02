@@ -1,6 +1,6 @@
 'use client'
 
-import { AutocompleteSearch } from '@/components/autocomplete-search'
+import { SearchInput } from '@/components/search-input'
 import { ArrowBack } from '@/components/svg/arrow-back'
 import { Logo } from '@/components/svg/logo'
 import { Title } from '@/components/typography/title'
@@ -13,7 +13,7 @@ export function Header() {
 	return (
 		<div className='flex flex-col gap-[20px]'>
 			{pathname === '/' ? <MainHeader /> : <GoBackHeader />}
-			<AutocompleteSearch placeholder='Search games...' />
+			<SearchInput />
 		</div>
 	)
 }

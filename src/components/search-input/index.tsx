@@ -1,5 +1,6 @@
 'use client'
 
+import { HighlightMatchingText } from '@/components/search-input/highlight-matching-text'
 import { CloseIcon } from '@/components/svg/close-icon'
 import { SearchIcon } from '@/components/svg/search-icon'
 import { Input } from '@/components/ui/input'
@@ -11,11 +12,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
-interface AutocompleteSearchProps {
-	placeholder: string
-}
-
-export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
+export function SearchInput() {
 	const [inputValue, setInputValue] = useState('')
 	const [suggestions, setSuggestions] = useState<IGDBGameSearchSuggestion[]>([])
 	const [isOpen, setIsOpen] = useState(false)
@@ -26,40 +23,12 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 
 	const { popularGames, isLoadingPopular } = useCollectedGames()
 
-	// Function to highlight matching text
-	// TODO: extract to a separate component
-	const highlightMatchingText = (text: string, searchTerm: string) => {
-		if (!searchTerm.trim() || showingPopular) {
-			return <span>{text}</span>
-		}
-
-		const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-		const parts = text.split(regex)
-
-		return (
-			<span>
-				{parts.map((part, index) => {
-					const isMatch = regex.test(part)
-					regex.lastIndex = 0 // Reset regex for next iteration
-					return isMatch ? (
-						<span className='text-pink-300' key={index}>
-							{part}
-						</span>
-					) : (
-						<span key={index}>{part}</span>
-					)
-				})}
-			</span>
-		)
-	}
-
-	// Fetch suggestions when input changes
 	useEffect(() => {
 		const fetchSuggestions = async () => {
 			if (inputValue.trim().length === 0) {
 				// Show prefetched popular games when input is empty
 				if (isOpen) {
-					setSuggestions(popularGames) // FIXME: types
+					setSuggestions(popularGames)
 					setShowingPopular(true)
 					setIsLoading(isLoadingPopular)
 				}
@@ -89,13 +58,11 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 		return () => clearTimeout(timeoutId)
 	}, [inputValue, popularGames, isLoadingPopular])
 
-	// Handle input change
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(e.target.value)
 		setIsOpen(true)
 	}
 
-	// Handle input focus
 	const handleFocus = async () => {
 		setIsOpen(true)
 
@@ -105,6 +72,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 			setShowingPopular(true)
 			setIsLoading(isLoadingPopular)
 		}
+
 		// If there's text, always ensure we have suggestions
 		else if (inputValue.trim().length >= 2) {
 			setShowingPopular(false)
@@ -123,9 +91,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 		}
 	}
 
-	// Handle input blur
 	const handleBlur = () => {
-		// Delay hiding to allow for clicks on suggestions
 		setTimeout(() => {
 			if (!dropdownRef.current?.contains(document.activeElement)) {
 				setIsOpen(false)
@@ -133,7 +99,6 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 		}, 150)
 	}
 
-	// Handle clear button click
 	const handleClear = () => {
 		setInputValue('')
 		setSuggestions([])
@@ -142,7 +107,6 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 		inputRef.current?.focus()
 	}
 
-	// Handle suggestion click
 	const handleSuggestionClick = (game: IGDBGameSearchSuggestion) => {
 		// TODO: move outside the component
 		setInputValue(game.name)
@@ -159,7 +123,6 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 		}
 	}
 
-	// Determine if we should show the dropdown
 	const shouldShowDropdown =
 		isOpen &&
 		(inputValue.trim().length === 0 || // Show popular games when empty
@@ -184,7 +147,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 
 				<Input
 					ref={inputRef}
-					placeholder={placeholder}
+					placeholder='Search games...'
 					value={inputValue}
 					onChange={handleInputChange}
 					onFocus={handleFocus}
@@ -228,7 +191,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 											</div>
 										)}
 										<span className='text-sm font-medium text-gray-900 truncate flex-1'>
-											{highlightMatchingText(game.name, inputValue)}
+											<HighlightMatchingText text={game.name} searchTerm={inputValue} skipHighlighting={showingPopular} />
 										</span>
 									</button>
 								</Link>
