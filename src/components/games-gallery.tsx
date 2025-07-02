@@ -2,7 +2,7 @@
 
 import { GameImage } from '@/components/game-image'
 import { TrashCan } from '@/components/svg/trash-can'
-import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
+import Link from 'next/link'
 
 interface GalleryGame {
 	id: number
@@ -38,15 +38,11 @@ interface GameCardProps extends GalleryGame {
 }
 
 function GameCard(props: GameCardProps) {
-	const { navigateToGame } = useAppNavigation()
-
-	function handleClick() {
-		navigateToGame(props.slug)
-	}
-
 	return (
 		<div className='relative cursor-pointer'>
-			<GameImage imageId={props.cover.image_id} alt={props.name} onClick={handleClick} priority={props.priority} />
+			<Link href={`/game/${props.slug}`} prefetch>
+				<GameImage imageId={props.cover.image_id} alt={props.name} priority={props.priority} />
+			</Link>
 			{props.onDelete && (
 				<div
 					className='absolute bottom-2 right-2 hover:opacity-80 transition-opacity duration-200'
