@@ -37,9 +37,12 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 
 	const coverImageUrl = game.cover?.image_id ? getIGDBImageUrl(game.cover.image_id, 'cover_big') : null
 
+	const description = `Collect ${game.name}${developer ? ` by ${developer}` : ''}.`
+	const title = `${game.name} | Aerolab Games`
+
 	return {
-		title: `${game.name} | Aerolab Games`,
-		description: game.summary || `Play ${game.name}${developer ? ` by ${developer}` : ''}. Available on ${platforms}.`,
+		title,
+		description,
 		keywords: [
 			game.name,
 			...(developer ? [developer] : []),
@@ -50,8 +53,8 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 			'video games',
 		],
 		openGraph: {
-			title: game.name,
-			description: game.summary || `Play ${game.name}${developer ? ` by ${developer}` : ''}`,
+			title,
+			description,
 			type: 'website',
 			...(coverImageUrl && {
 				images: [
@@ -66,8 +69,8 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 		},
 		twitter: {
 			card: 'summary_large_image',
-			title: game.name,
-			description: game.summary || `Play ${game.name}${developer ? ` by ${developer}` : ''}`,
+			title,
+			description,
 			...(coverImageUrl && {
 				images: [coverImageUrl],
 			}),
