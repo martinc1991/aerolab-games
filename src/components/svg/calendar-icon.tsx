@@ -15,7 +15,7 @@ export function CalendarIcon({ size = 14, color = '#6727A6' }: CalendarIconProps
 				strokeLinecap='round'
 				strokeLinejoin='round'
 			/>
-			<path d='M2 6.66663H14' stroke='#6727A6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' />
+			<path d='M2 6.66663H14' stroke={color} strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
 		</svg>
 	)
 }
