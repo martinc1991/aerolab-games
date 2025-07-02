@@ -3,7 +3,6 @@
 import { GameImage } from '@/components/game-image'
 import { TrashCan } from '@/components/svg/trash-can'
 import Link from 'next/link'
-import { useMediaQuery } from 'usehooks-ts'
 
 interface GalleryGame {
 	id: number
@@ -25,7 +24,7 @@ export function GamesGallery({ games, onDelete, emptyState = null, priority = fa
 	return (
 		<div className='grid grid-cols-3 md:grid-cols-4 mx-auto justify-items-center w-full max-w-[472px] md:max-w-[728px] gap-2'>
 			{games.map((game, index) => (
-				<div key={`${game.id}-${index}`}>
+				<div key={`${game.id}-${index}`} className='w-full aspect-[264/374]'>
 					<GameCard id={game.id} slug={game.slug} cover={game.cover} name={game.name} onDelete={onDelete} priority={priority} />
 				</div>
 			))}
@@ -39,12 +38,10 @@ interface GameCardProps extends GalleryGame {
 }
 
 function GameCard(props: GameCardProps) {
-	const matches = useMediaQuery('(min-width: 768px)')
-
 	return (
-		<div className='relative cursor-pointer'>
-			<Link href={`/game/${props.slug}`} prefetch>
-				<GameImage imageId={props.cover.image_id} alt={props.name} priority={props.priority} imageSize={matches ? '720p' : 'cover_small'} />
+		<div className='relative cursor-pointer h-full'>
+			<Link href={`/game/${props.slug}`} prefetch className='block h-full'>
+				<GameImage imageId={props.cover.image_id} alt={props.name} priority={props.priority} imageSize='cover_big' />
 			</Link>
 			{props.onDelete && (
 				<div

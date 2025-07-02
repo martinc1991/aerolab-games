@@ -1,6 +1,5 @@
 import { Carousel } from '@/components/carousel'
-import { getIGDBImageUrl } from '@/services/igdb/imageService'
-import Image from 'next/image'
+import { GameImage } from '@/components/game-image'
 import { useMemo } from 'react'
 
 interface ScreenshotCarouselProps {
@@ -12,13 +11,12 @@ export function ScreenshotCarousel(props: ScreenshotCarouselProps) {
 	const slides = useMemo(
 		() =>
 			props.screenshots.map((screenshot) => (
-				<Image
+				<GameImage
 					key={screenshot.id}
-					src={getIGDBImageUrl(screenshot.image_id, 'thumb')}
+					imageId={screenshot.image_id}
+					imageSize='thumb'
 					alt={`${props.name} screenshot ${screenshot.id}`}
 					className='rounded-xl'
-					height={90}
-					width={90}
 				/>
 			)),
 		[props.screenshots, props.name]

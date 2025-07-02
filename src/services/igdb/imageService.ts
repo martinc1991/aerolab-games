@@ -3,7 +3,7 @@ import { IGDB_IMAGE_BASE_URL } from '@/config/constants'
 export type IGDBImageSize =
 	| 'cover_small' // 90x128
 	| 'screenshot_med' // 569x320
-	| 'cover_big' // 227x320
+	| 'cover_big' // 264x374
 	| 'logo_med' // 284x160
 	| 'screenshot_big' // 889x500
 	| 'screenshot_huge' // 1280x720
@@ -11,6 +11,22 @@ export type IGDBImageSize =
 	| 'micro' // 35x35
 	| '720p' // 1280x720
 	| '1080p' // 1920x1080
+
+/**
+ * Dimensions map for IGDB image sizes
+ */
+const IGDB_IMAGE_DIMENSIONS: Record<IGDBImageSize, { width: number; height: number }> = {
+	cover_small: { width: 90, height: 128 },
+	screenshot_med: { width: 569, height: 320 },
+	cover_big: { width: 264, height: 374 },
+	logo_med: { width: 284, height: 160 },
+	screenshot_big: { width: 889, height: 500 },
+	screenshot_huge: { width: 1280, height: 720 },
+	thumb: { width: 90, height: 90 },
+	micro: { width: 35, height: 35 },
+	'720p': { width: 1280, height: 720 },
+	'1080p': { width: 1920, height: 1080 },
+}
 
 /**
  * Construct IGDB image URL from image_id and size
@@ -89,4 +105,22 @@ export function getScreenshotImageSizes(imageId: string) {
  */
 export function getLogoImageSizes(imageId: string) {
 	return getMultipleImageSizes(imageId, ['thumb', 'logo_med', '720p'])
+}
+
+/**
+ * Get IGDB image with URL and dimensions
+ * @param imageId - The image_id from IGDB API response
+ * @param size - The desired image size
+ * @param retina - Whether to use retina version
+ * @returns Object with url, width, and height
+ */
+export function getIGDBImageWithDimensions(imageId: string, size: IGDBImageSize, retina = true) {
+	const url = getIGDBImageUrl(imageId, size, retina)
+	const dimensions = IGDB_IMAGE_DIMENSIONS[size]
+
+	return {
+		url,
+		width: dimensions.width,
+		height: dimensions.height,
+	}
 }
