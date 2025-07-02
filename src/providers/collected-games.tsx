@@ -7,7 +7,7 @@ import { IGDBGameDetails, IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createContext, Suspense, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
-enum SortBy {
+export const enum SortBy {
 	LAST_ADDED = 'last-added',
 	NEWEST = 'newest',
 	OLDEST = 'oldest',

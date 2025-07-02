@@ -23,8 +23,8 @@ export function GamesGallery({ games, onDelete, emptyState = null, priority = fa
 
 	return (
 		<div className='grid grid-cols-3 md:grid-cols-4 justify-items-center w-full md:max-w-[728px] gap-2'>
-			{games.map((game) => (
-				<div key={game.id}>
+			{games.map((game, index) => (
+				<div key={`${game.id}-${index}`}>
 					<GameCard id={game.id} slug={game.slug} cover={game.cover} name={game.name} onDelete={onDelete} priority={priority} />
 				</div>
 			))}
