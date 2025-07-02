@@ -119,11 +119,16 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
-	body {
-		@apply bg-background text-foreground;
+	html {
 		background-image: url('/wasd.png');
 		background-position: top center;
 		background-repeat: no-repeat;
 		background-size: contain;
+		background-attachment: fixed;
+	}
+
+	body {
+		@apply bg-background text-foreground;
+		background: transparent;
 	}
 }
