@@ -223,7 +223,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 												className='rounded-md object-cover flex-shrink-0'
 											/>
 										) : (
-											<div className='w-10 h-10 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
+											<div className='w-[30px] h-[30px] bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
 												<span className='text-xs text-gray-400'>?</span>
 											</div>
 										)}
