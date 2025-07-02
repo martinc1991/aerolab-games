@@ -122,7 +122,6 @@
 	body {
 		@apply bg-background text-foreground;
 		background-image: url('/wasd.png');
-		background-attachment: fixed;
 		background-position: top center;
 		background-repeat: no-repeat;
 		background-size: contain;
