@@ -4,11 +4,11 @@ import { CloseIcon } from '@/components/svg/close-icon'
 import { SearchIcon } from '@/components/svg/search-icon'
 import { Input } from '@/components/ui/input'
 import { searchGameSuggestions } from '@/lib/actions/game-actions'
-import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { useCollectedGames } from '@/providers/collected-games'
 import { getIGDBImageUrl } from '@/services/igdb/imageService'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 interface AutocompleteSearchProps {
@@ -23,7 +23,6 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	const [showingPopular, setShowingPopular] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
-	const { navigateToGame } = useAppNavigation()
 
 	const { popularGames, isLoadingPopular } = useCollectedGames()
 
@@ -146,12 +145,9 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 	// Handle suggestion click
 	const handleSuggestionClick = (game: IGDBGameSearchSuggestion) => {
 		// TODO: move outside the component
-
 		setInputValue(game.name)
 		setIsOpen(false)
 		inputRef.current?.blur()
-		navigateToGame(game.slug)
-
 		setInputValue('')
 	}
 
@@ -214,27 +210,28 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 					) : suggestions.length > 0 ? (
 						<div className='p-2'>
 							{suggestions.map((game) => (
-								<button
-									key={game.id}
-									className={`w-full h-[42px] flex gap-2 items-center p-2 hover:bg-gray-50 transition-colors text-left cursor-pointer`}
-									onClick={() => handleSuggestionClick(game)}
-									onMouseDown={(e) => e.preventDefault()} // Prevent input blur
-								>
-									{game.cover?.image_id ? (
-										<Image
-											src={getIGDBImageUrl(game.cover.image_id, 'micro')}
-											width={30}
-											height={30}
-											alt={`${game.name} cover`}
-											className='rounded-md object-cover flex-shrink-0'
-										/>
-									) : (
-										<div className='w-10 h-10 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
-											<span className='text-xs text-gray-400'>?</span>
-										</div>
-									)}
-									<span className='text-sm font-medium text-gray-900 truncate flex-1'>{highlightMatchingText(game.name, inputValue)}</span>
-								</button>
+								<Link key={game.id} href={`/game/${game.slug}`} onClick={() => handleSuggestionClick(game)} prefetch>
+									<button
+										className={`w-full h-[42px] flex gap-2 items-center p-2 hover:bg-gray-50 transition-colors text-left cursor-pointer`}
+									>
+										{game.cover?.image_id ? (
+											<Image
+												src={getIGDBImageUrl(game.cover.image_id, 'micro')}
+												width={30}
+												height={30}
+												alt={`${game.name} cover`}
+												className='rounded-md object-cover flex-shrink-0'
+											/>
+										) : (
+											<div className='w-10 h-10 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
+												<span className='text-xs text-gray-400'>?</span>
+											</div>
+										)}
+										<span className='text-sm font-medium text-gray-900 truncate flex-1'>
+											{highlightMatchingText(game.name, inputValue)}
+										</span>
+									</button>
+								</Link>
 							))}
 						</div>
 					) : inputValue.trim().length >= 2 ? (
