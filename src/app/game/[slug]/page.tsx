@@ -9,11 +9,77 @@ import { StarIcon } from '@/components/svg/star-icon'
 import { Title } from '@/components/typography/title'
 import { formatIGDBRating, formatIGDBTimestamp } from '@/lib/utils'
 import { getGameBySlug } from '@/services/igdb/games/get-details'
+import { getIGDBImageUrl } from '@/services/igdb/imageService'
+import type { Metadata } from 'next'
 
 interface GamePageProps {
 	params: Promise<{
 		slug: string
 	}>
+}
+
+export async function generateMetadata({ params }: GamePageProps): Promise<Metadata> {
+	const { slug } = await params
+	const game = await getGameBySlug(slug)
+
+	if (!game) {
+		return {
+			title: 'Game Not Found',
+			description: 'The requested game could not be found.',
+		}
+	}
+
+	const developer = game.involved_companies.find((company) => company.developer)?.company.name
+	const genres = game.genres.map((genre) => genre.name).join(', ')
+	const platforms = game.platforms.map((platform) => platform.name).join(', ')
+	const rating = formatIGDBRating(game.rating)
+	const releaseDate = formatIGDBTimestamp(game.first_release_date)
+
+	const coverImageUrl = game.cover?.image_id ? getIGDBImageUrl(game.cover.image_id, 'cover_big') : null
+
+	return {
+		title: `${game.name} | Aerolab Games`,
+		description: game.summary || `Play ${game.name}${developer ? ` by ${developer}` : ''}. Available on ${platforms}.`,
+		keywords: [
+			game.name,
+			...(developer ? [developer] : []),
+			...game.genres.map((genre) => genre.name),
+			...game.platforms.map((platform) => platform.name),
+			'games',
+			'gaming',
+			'video games',
+		],
+		openGraph: {
+			title: game.name,
+			description: game.summary || `Play ${game.name}${developer ? ` by ${developer}` : ''}`,
+			type: 'website',
+			...(coverImageUrl && {
+				images: [
+					{
+						url: coverImageUrl,
+						width: 264,
+						height: 352,
+						alt: `${game.name} cover art`,
+					},
+				],
+			}),
+		},
+		twitter: {
+			card: 'summary_large_image',
+			title: game.name,
+			description: game.summary || `Play ${game.name}${developer ? ` by ${developer}` : ''}`,
+			...(coverImageUrl && {
+				images: [coverImageUrl],
+			}),
+		},
+		other: {
+			'game:rating': rating,
+			'game:release_date': releaseDate,
+			'game:genre': genres,
+			'game:platform': platforms,
+			...(developer && { 'game:developer': developer }),
+		},
+	}
 }
 
 export default async function GamePage({ params }: GamePageProps) {
