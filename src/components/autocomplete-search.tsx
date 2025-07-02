@@ -216,7 +216,7 @@ export function AutocompleteSearch({ placeholder }: AutocompleteSearchProps) {
 									>
 										{game.cover?.image_id ? (
 											<Image
-												src={getIGDBImageUrl(game.cover.image_id, 'micro')}
+												src={getIGDBImageUrl(game.cover.image_id, 'micro', false)}
 												width={30}
 												height={30}
 												alt={`${game.name} cover`}

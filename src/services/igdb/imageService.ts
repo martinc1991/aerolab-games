@@ -18,8 +18,9 @@ export type IGDBImageSize =
  * @param size - The desired image size
  * @returns Complete image URL
  */
-export function getIGDBImageUrl(imageId: string, size: IGDBImageSize = '720p'): string {
-	return `${IGDB_IMAGE_BASE_URL}/t_${size}/${imageId}.jpg`
+export function getIGDBImageUrl(imageId: string, size: IGDBImageSize = '720p', retina = true): string {
+	const suffix = retina ? '_2x' : ''
+	return `${IGDB_IMAGE_BASE_URL}/t_${size}${suffix}/${imageId}.jpg`
 }
 
 /**
