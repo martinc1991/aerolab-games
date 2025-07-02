@@ -1,4 +1,4 @@
-import { GamesGallery } from '@/components/games-gallery'
+import { CollectedGamesGallery } from '@/components/collected-games'
 import { SavedGamesFilters } from '@/components/saved-games-filters'
 import { Title } from '@/components/typography/title'
 
@@ -9,7 +9,7 @@ export default async function Home() {
 				<Title>Saved Games</Title>
 				<SavedGamesFilters />
 			</div>
-			<GamesGallery />
+			<CollectedGamesGallery />
 		</div>
 	)
 }

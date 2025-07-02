@@ -1,73 +1,66 @@
 'use client'
 
 import { GameImage } from '@/components/game-image'
-import { EmptyGames } from '@/components/svg/empty-games'
 import { TrashCan } from '@/components/svg/trash-can'
-import { toast } from '@/components/toast'
 import { useAppNavigation } from '@/lib/hooks/use-app-navigation'
-import { CollectedGame, useCollectedGames } from '@/providers/collected-games'
 
-export function GamesGallery() {
-	const { games } = useCollectedGames()
+interface GalleryGame {
+	id: number
+	slug: string
+	cover: { id: number; image_id: string }
+	name: string
+}
 
-	if (games.length === 0) {
-		return <EmptyState />
-	}
+interface GamesGalleryProps {
+	games: GalleryGame[]
+	onDelete?: (game: GalleryGame) => void
+	emptyState?: React.ReactNode
+}
+
+export function GamesGallery({ games, onDelete, emptyState = null }: GamesGalleryProps) {
+	if (games.length === 0 && emptyState) return emptyState
 
 	return (
-		<div className='flex justify-center'>
-			<div className='grid grid-cols-3 md:grid-cols-4 justify-items-center w-full max-w-[358px] md:max-w-[728px] gap-2'>
-				{games.map((game) => (
-					<div key={game.id}>
-						<GameCard game={game} />
-					</div>
-				))}
-			</div>
+		<div className='grid grid-cols-3 md:grid-cols-4 justify-items-center w-full md:max-w-[728px] gap-2'>
+			{games.map((game) => (
+				<div key={game.id}>
+					<GameCard id={game.id} slug={game.slug} cover={game.cover} name={game.name} onDelete={onDelete} />
+				</div>
+			))}
 		</div>
 	)
 }
 
-function EmptyState() {
-	return (
-		<div className='flex flex-col gap-6 items-center'>
-			<EmptyGames />
-
-			<div className='flex flex-col gap-2 text-center'>
-				<span className='text-[16px] font-semibold'>Nothing collected yet</span>
-				<span className='text-sm text-muted-foreground'>Here you will see your collected games</span>
-			</div>
-		</div>
-	)
+interface GameCardProps extends GalleryGame {
+	onDelete?: (game: GalleryGame) => void
 }
 
-function GameCard({ game }: { game: CollectedGame }) {
+function GameCard(props: GameCardProps) {
 	const { navigateToGame } = useAppNavigation()
-	const { removeCollectedGame } = useCollectedGames()
 
 	function handleClick() {
-		navigateToGame(game.slug)
-	}
-
-	function handleRemoveGame() {
-		removeCollectedGame(game.id)
-		toast({
-			title: 'Game deleted',
-			description: `${game.name} has been removed from your collection`,
-		})
+		navigateToGame(props.slug)
 	}
 
 	return (
 		<div className='relative cursor-pointer'>
-			<GameImage imageId={game.cover.image_id} alt={game.name} onClick={handleClick} />
-			<div
-				className='absolute bottom-2 right-2 hover:opacity-80 transition-opacity duration-200'
-				onClick={(e) => {
-					e.stopPropagation()
-					handleRemoveGame()
-				}}
-			>
-				<TrashCan />
-			</div>
+			<GameImage imageId={props.cover.image_id} alt={props.name} onClick={handleClick} />
+			{props.onDelete && (
+				<div
+					className='absolute bottom-2 right-2 hover:opacity-80 transition-opacity duration-200'
+					onClick={(e) => {
+						e.stopPropagation()
+						props.onDelete?.({
+							id: props.id,
+							slug: props.slug,
+							cover: props.cover,
+							name: props.name,
+						})
+					}}
+				>
+					<TrashCan />
+				</div>
+			)}
 		</div>
 	)
 }

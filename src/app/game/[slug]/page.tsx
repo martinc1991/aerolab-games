@@ -2,6 +2,7 @@ import { Badge } from '@/components/badge'
 import { CollectGameButton } from '@/components/collect-game-button'
 import { GameImage } from '@/components/game-image'
 import { ScreenshotCarousel } from '@/components/screenshots-carousel'
+import { SimilarGames } from '@/components/similar-games'
 import { CalendarIcon } from '@/components/svg/calendar-icon'
 import { PuzzlePieceIcon } from '@/components/svg/puzzle-piece-icon'
 import { StarIcon } from '@/components/svg/star-icon'
@@ -10,9 +11,9 @@ import { formatIGDBRating, formatIGDBTimestamp } from '@/lib/utils'
 import { getGameBySlug } from '@/services/igdb/games/get-details'
 
 interface GamePageProps {
-	params: {
+	params: Promise<{
 		slug: string
-	}
+	}>
 }
 
 export default async function GamePage({ params }: GamePageProps) {
@@ -61,7 +62,10 @@ export default async function GamePage({ params }: GamePageProps) {
 				)}
 			</div>
 
-			<div>Similar games </div>
+			<div className='flex flex-col gap-2'>
+				<span className='text-[16px] font-semibold leading-5'>Similar Games</span>
+				<SimilarGames games={game.similar_games} />
+			</div>
 		</div>
 	)
 }
