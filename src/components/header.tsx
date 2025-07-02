@@ -4,6 +4,7 @@ import { AutocompleteSearch } from '@/components/autocomplete-search'
 import { ArrowBack } from '@/components/svg/arrow-back'
 import { Logo } from '@/components/svg/logo'
 import { Title } from '@/components/typography/title'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
 export function Header() {
@@ -20,7 +21,7 @@ export function Header() {
 function MainHeader() {
 	return (
 		<div className='flex items-center gap-2 sm:justify-center'>
-			<Logo />
+			<GoHomeLink />
 			<Title>Gaming Haven Z</Title>
 		</div>
 	)
@@ -31,10 +32,19 @@ function GoBackHeader() {
 
 	return (
 		<div className='flex items-center gap-2 sm:w-[358px] sm:place-self-center'>
-			<button onClick={() => router.back()} className='flex items-center gap-2 px-3 py-2 cursor-pointer'>
+			<GoHomeLink />
+			<button onClick={() => router.back()} className='flex items-center gap-2 px-3 cursor-pointer'>
 				<ArrowBack />
-				<span className='text-[16px]'>Back</span>
+				<span className='text-[16px] font-semibold'>Back</span>
 			</button>
 		</div>
+	)
+}
+
+function GoHomeLink() {
+	return (
+		<Link href='/' className='cursor-pointer'>
+			<Logo />
+		</Link>
 	)
 }
