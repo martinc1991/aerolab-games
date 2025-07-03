@@ -1,5 +1,6 @@
 import { igdbQuery } from '@/lib/igdb/api'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
+import { sanitizeToken } from '@/lib/utils'
 import { getRelatedGames } from '@/services/igdb/games/get-related-games'
 
 const suggestionFields = 'name, cover.image_id, slug'
@@ -16,9 +17,10 @@ export async function getSearchSuggestions(input: string, limit: number = 10): P
 	const words = input
 		.trim()
 		.split(' ')
+		.map(sanitizeToken)
 		.filter((word) => word.length > 0)
 
-	const wordConditions = words.map((word) => `name ~ *"${word}"*`).join(' & ')
+	const wordConditions = words.map((word) => `(name ~ *"${word}"* | slug ~ *"${word}"*)`).join(' & ')
 
 	const query = `
   fields ${suggestionFields};
