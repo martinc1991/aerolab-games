@@ -17,7 +17,7 @@ export function CollectedGamesGallery() {
 
 function EmptyState() {
 	return (
-		<div className='flex flex-col gap-6 items-center'>
+		<div className='flex flex-col gap-6 items-center py-16'>
 			<EmptyGames />
 
 			<div className='flex flex-col gap-2 text-center'>
