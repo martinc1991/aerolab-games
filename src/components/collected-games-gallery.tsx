@@ -2,6 +2,7 @@
 
 import { GalleryGame, GamesGallery } from '@/components/games-gallery'
 import { EmptyGames } from '@/components/svg/empty-games'
+import { Typography } from '@/components/typography'
 import { useCollectedGames } from '@/providers/collected-games'
 
 export function CollectedGamesGallery() {
@@ -20,8 +21,8 @@ function EmptyState() {
 			<EmptyGames />
 
 			<div className='flex flex-col gap-2 text-center'>
-				<span className='text-[16px] font-semibold'>Nothing collected yet</span>
-				<span className='text-sm text-muted-foreground'>Here you will see your collected games</span>
+				<Typography.H3>Nothing collected yet</Typography.H3>
+				<Typography.Muted className='text-sm'>Here you will see your collected games</Typography.Muted>
 			</div>
 		</div>
 	)

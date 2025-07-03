@@ -1,3 +1,4 @@
+import { Typography } from '@/components/typography'
 import React from 'react'
 
 interface BadgeProps {
@@ -8,11 +9,11 @@ interface BadgeProps {
 
 export function Badge(props: BadgeProps) {
 	return (
-		<div className='rounded-full bg-white py-2 px-3 border border-[#E2DCE7] h-9 flex items-center gap-1 max-w-full'>
+		<div className='rounded-full bg-white py-2 px-3 border border-main h-9 flex items-center gap-1 max-w-full'>
 			{props.icon}
 			<div className='flex gap-1 min-w-0 flex-1'>
-				<span className='text-sm text-[#6727A6] leading-5 whitespace-nowrap'>{props.title}:</span>
-				<span className='text-[16px] text-black leading-5 truncate'>{props.value}</span>
+				<Typography.Highlighted className='text-sm font-semibold whitespace-nowrap'>{props.title}:</Typography.Highlighted>
+				<Typography.Muted className='truncate text-sm'>{props.value}</Typography.Muted>
 			</div>
 		</div>
 	)
