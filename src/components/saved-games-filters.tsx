@@ -69,7 +69,7 @@ interface FilterButtonProps {
 function FilterButton({ value, children }: FilterButtonProps) {
 	return (
 		<ToggleGroupItem
-			className='!px-4 !rounded-full transition-all duration-500 linear data-[state=on]:!bg-main data-[state=on]:!text-white data-[state=off]:!bg-transparent cursor-pointer data-[state=on]:!cursor-default'
+			className='!px-6 !rounded-full transition-all duration-500 linear data-[state=on]:!bg-main data-[state=on]:!text-white data-[state=off]:!bg-transparent cursor-pointer data-[state=on]:!cursor-default'
 			value={value}
 		>
 			{children}
