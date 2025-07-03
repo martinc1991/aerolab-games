@@ -27,3 +27,12 @@ export function formatIGDBTimestamp(timestamp: number) {
 
 	return `${month}/${day}/${year}`
 }
+
+/**
+ * Get a random element from an array
+ * @param array - The array to get a random element from
+ * @returns A random element from the array
+ */
+export function getRandomElement<T>(array: T[]): T {
+	return array[Math.floor(Math.random() * array.length)]
+}

@@ -1,7 +1,7 @@
 'use server'
 
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
-import { getPopularGamesSuggestions, getSearchSuggestions } from '@/services/igdb'
+import { getPopularGamesSuggestions, getRelatedGamesSuggestions, getSearchSuggestions } from '@/services/igdb'
 
 export async function searchGameSuggestions(searchTerm: string, limit = 5): Promise<IGDBGameSearchSuggestion[]> {
 	try {
@@ -24,6 +24,16 @@ export async function getPopularGameSuggestions(limit = 5): Promise<IGDBGameSear
 		return results
 	} catch (error) {
 		console.error('Failed to fetch popular games:', error)
+		return []
+	}
+}
+
+export async function getRelatedGameSuggestions(gameId: number, limit = 5): Promise<IGDBGameSearchSuggestion[]> {
+	try {
+		const results = await getRelatedGamesSuggestions(gameId, limit)
+		return results
+	} catch (error) {
+		console.error('Failed to fetch related games:', error)
 		return []
 	}
 }

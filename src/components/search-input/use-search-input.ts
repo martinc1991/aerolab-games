@@ -25,7 +25,7 @@ export function useSearchInput() {
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const clearButtonRef = useRef<HTMLButtonElement>(null)
 
-	const { popularGames: defaultSuggestions, isLoadingPopular } = useCollectedGames()
+	const { defaultSuggestions, isLoadingPopular } = useCollectedGames()
 
 	const isLoading = searchState === 'loading' || (showingDefault && isLoadingPopular)
 	const hasError = searchState === 'error'

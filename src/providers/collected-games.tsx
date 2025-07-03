@@ -2,9 +2,10 @@
 
 import { LoadingSpinner } from '@/components/loading-spinner'
 import { toast } from '@/components/toast'
-import { getPopularGameSuggestions } from '@/lib/actions/game-actions'
+import { getPopularGameSuggestions, getRelatedGameSuggestions } from '@/lib/actions/game-actions'
 import { useGameStorage } from '@/lib/hooks/use-game-storage'
 import { IGDBGameDetails, IGDBGameSearchSuggestion } from '@/lib/igdb/types'
+import { getRandomElement } from '@/lib/utils'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createContext, Suspense, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
@@ -27,13 +28,13 @@ export interface CollectedGame {
 export interface CollectedGamesState {
 	sortBy: SortBy
 	games: CollectedGame[]
-	popularGames: IGDBGameSearchSuggestion[]
+	defaultSuggestions: IGDBGameSearchSuggestion[]
 	isLoadingPopular: boolean
 }
 
 export interface GamesActions {
 	setSortBy: (sortBy: SortBy) => void
-	setPopularGames: (popularGames: IGDBGameSearchSuggestion[]) => void
+	setDefaultSuggestions: (defaultSuggestions: IGDBGameSearchSuggestion[]) => void
 	collectGame: (game: IGDBGameDetails) => void
 	removeCollectedGame: (id: number, name: string) => void
 	isGameCollected: (gameId: number) => boolean
@@ -44,7 +45,7 @@ export type CollectedGamesContextType = CollectedGamesState & GamesActions
 const defaultState: CollectedGamesState = {
 	sortBy: SortBy.LAST_ADDED,
 	games: [],
-	popularGames: [],
+	defaultSuggestions: [],
 	isLoadingPopular: false,
 }
 
@@ -72,7 +73,7 @@ function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 	})()
 
 	const [sortBy, setSortBy] = useState<SortBy>(initialSortBy)
-	const [popularGames, setPopularGames] = useState<IGDBGameSearchSuggestion[]>(defaultState.popularGames)
+	const [defaultSuggestions, setDefaultSuggestions] = useState<IGDBGameSearchSuggestion[]>(defaultState.defaultSuggestions)
 	const [isLoadingPopular, setIsLoadingPopular] = useState<boolean>(defaultState.isLoadingPopular)
 
 	const sortedGames = useMemo(() => {
@@ -95,8 +96,17 @@ function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 		async function fetchPopularGames() {
 			setIsLoadingPopular(true)
 			try {
-				const results = await getPopularGameSuggestions()
-				setPopularGames(results)
+				let suggestions: IGDBGameSearchSuggestion[] = []
+
+				if (gameStorage.games.length === 0) {
+					suggestions = await getPopularGameSuggestions()
+				} else {
+					const randomGameId = getRandomElement(gameStorage.games).id
+
+					suggestions = await getRelatedGameSuggestions(randomGameId, 5)
+				}
+
+				setDefaultSuggestions(suggestions)
 			} catch (error) {
 				console.error('Failed to prefetch popular games:', error)
 			} finally {
@@ -148,8 +158,8 @@ function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 		sortBy,
 		setSortBy: handleSetSortBy,
 		games: sortedGames,
-		popularGames,
-		setPopularGames,
+		defaultSuggestions,
+		setDefaultSuggestions,
 		isLoadingPopular,
 		collectGame,
 		removeCollectedGame,
