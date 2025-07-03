@@ -25,9 +25,9 @@ export function useSearchInput() {
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const clearButtonRef = useRef<HTMLButtonElement>(null)
 
-	const { defaultSuggestions, isLoadingPopular } = useCollectedGames()
+	const { defaultSuggestions, isLoadingDefaultSuggestions } = useCollectedGames()
 
-	const isLoading = searchState === 'loading' || (showingDefault && isLoadingPopular)
+	const isLoading = searchState === 'loading' || (showingDefault && isLoadingDefaultSuggestions)
 	const hasError = searchState === 'error'
 	const isEmptySearch = inputValue.trim().length === 0
 	const isValidSearch = inputValue.trim().length >= CONFIG.MIN_SEARCH_LENGTH

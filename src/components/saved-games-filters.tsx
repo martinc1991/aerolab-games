@@ -2,7 +2,8 @@
 
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
-import { SortBy, useCollectedGames } from '@/providers/collected-games'
+import { useCollectedGames } from '@/providers/collected-games'
+import { SortBy } from '@/types'
 import { useIntersectionObserver } from 'usehooks-ts'
 
 export function SavedGamesFilters() {
