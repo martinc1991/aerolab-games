@@ -36,3 +36,17 @@ export function formatIGDBTimestamp(timestamp: number) {
 export function getRandomElement<T>(array: T[]): T {
 	return array[Math.floor(Math.random() * array.length)]
 }
+
+/**
+ * Normalize a token to only a–z and 0–9
+ * 1. Decompose & strip accents
+ * 2. Remove any char that isn’t [A-Za-z0-9]
+ * 3. Lowercase the result
+ */
+export function sanitizeToken(s: string): string {
+	return s
+		.normalize('NFD') // NFD: decompose accents (e.g. é → e +  ́ )
+		.replace(/[\u0300-\u036f]/g, '') // strip combining marks
+		.replace(/[^A-Za-z0-9]/g, '') // remove everything except letters & digits
+		.toLowerCase()
+}
