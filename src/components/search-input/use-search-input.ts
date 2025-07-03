@@ -15,6 +15,7 @@ type SearchState = 'idle' | 'loading' | 'error' | 'success'
 export function useSearchInput() {
 	const [inputValue, setInputValue] = useState('')
 	const [suggestions, setSuggestions] = useState<IGDBGameSearchSuggestion[]>([])
+	const [selectedIndex, setSelectedIndex] = useState(-1) // -1 means no selection
 	const [isOpen, setIsOpen] = useState(false)
 	const [searchState, setSearchState] = useState<SearchState>('idle')
 	const [showingDefault, setShowingDefault] = useState(false)
@@ -57,6 +58,10 @@ export function useSearchInput() {
 	}, [isOpen, handleClickOutside])
 
 	useEffect(() => {
+		setSelectedIndex(-1)
+	}, [suggestions, isOpen])
+
+	useEffect(() => {
 		if (isEmptySearch && isOpen && defaultSuggestions.length > 0) {
 			if (!showingDefault || suggestions !== defaultSuggestions) {
 				setSuggestions(defaultSuggestions)
@@ -70,6 +75,7 @@ export function useSearchInput() {
 		setSuggestions([])
 		setShowingDefault(false)
 		setSearchState('idle')
+		setSelectedIndex(-1)
 	}, [])
 
 	const performSearch = useCallback(
@@ -103,6 +109,10 @@ export function useSearchInput() {
 
 	const debouncedSearch = useDebounceCallback(performSearch, CONFIG.DEBOUNCE_DELAY)
 
+	useEffect(() => {
+		debouncedSearch(inputValue)
+	}, [inputValue, debouncedSearch])
+
 	const resetSearch = useCallback(() => {
 		debouncedSearch.cancel()
 		setInputValue('')
@@ -114,15 +124,14 @@ export function useSearchInput() {
 	const closeDropdown = useCallback(() => {
 		debouncedSearch.cancel()
 		setIsOpen(false)
+		setSelectedIndex(-1)
 		inputRef.current?.blur()
 	}, [debouncedSearch])
 
-	useEffect(() => {
-		debouncedSearch(inputValue)
-	}, [inputValue, debouncedSearch])
-
 	const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(e.target.value)
+		const newValue = e.target.value
+		setInputValue(newValue)
+		setSelectedIndex(-1) // Reset selection when typing
 		setIsOpen(true)
 	}, [])
 
@@ -139,23 +148,65 @@ export function useSearchInput() {
 		resetSearch()
 	}, [resetSearch])
 
-	const handleSuggestionClick = useCallback(() => {
-		closeDropdown()
-		setInputValue('')
-	}, [closeDropdown])
-
-	const handleEscapeKey = useCallback(
-		(e: React.KeyboardEvent) => {
-			if (e.key === 'Escape') {
+	const handleSuggestionClick = useCallback(
+		(index: number) => {
+			const selectedGame = suggestions[index]
+			if (selectedGame) {
 				closeDropdown()
+				setInputValue('')
 			}
 		},
-		[closeDropdown]
+		[suggestions, closeDropdown]
+	)
+
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent) => {
+			if (!isOpen || suggestions.length === 0) {
+				if (e.key === 'Escape') {
+					closeDropdown()
+				}
+				return
+			}
+
+			switch (e.key) {
+				case 'ArrowDown': {
+					e.preventDefault()
+					const nextIndex = selectedIndex < suggestions.length - 1 ? selectedIndex + 1 : 0
+					setSelectedIndex(nextIndex)
+					break
+				}
+
+				case 'ArrowUp': {
+					e.preventDefault()
+					const prevIndex = selectedIndex > 0 ? selectedIndex - 1 : suggestions.length - 1
+					setSelectedIndex(prevIndex)
+					break
+				}
+
+				case 'Enter': {
+					e.preventDefault()
+					if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+						const selectedGame = suggestions[selectedIndex]
+						// Navigate to the selected game
+						window.location.href = `/game/${selectedGame.slug}`
+					}
+					break
+				}
+
+				case 'Escape': {
+					e.preventDefault()
+					closeDropdown()
+					break
+				}
+			}
+		},
+		[isOpen, suggestions, selectedIndex, closeDropdown]
 	)
 
 	return {
 		inputValue,
 		suggestions,
+		selectedIndex,
 		isOpen,
 		isLoading,
 		hasError,
@@ -167,6 +218,6 @@ export function useSearchInput() {
 		handleInputFocus,
 		handleClearClick,
 		handleSuggestionClick,
-		handleEscapeKey,
+		handleKeyDown,
 	}
 }

@@ -14,6 +14,7 @@ export function SearchInput() {
 		// Input state
 		inputValue,
 		suggestions,
+		selectedIndex,
 		isOpen,
 		isLoading,
 		hasError,
@@ -29,7 +30,7 @@ export function SearchInput() {
 		handleInputFocus,
 		handleClearClick,
 		handleSuggestionClick,
-		handleEscapeKey,
+		handleKeyDown,
 	} = useSearchInput()
 
 	return (
@@ -55,7 +56,7 @@ export function SearchInput() {
 					value={inputValue}
 					onChange={handleInputChange}
 					onFocus={handleInputFocus}
-					onKeyDown={handleEscapeKey}
+					onKeyDown={handleKeyDown}
 					className={`w-full bg-white shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-300 selection:bg-pink-200 selection:text-pink-800 pl-10 text-sm ${
 						inputValue ? 'pr-10' : 'pr-3'
 					} overflow-hidden text-ellipsis whitespace-nowrap ${
@@ -76,31 +77,36 @@ export function SearchInput() {
 					) : hasError ? (
 						<div className='px-4 py-4 text-sm text-red-500 text-center'>Search failed. Please try again.</div>
 					) : suggestions.length > 0 ? (
-						<div className='p-2'>
-							{suggestions.map((game) => (
-								<Link key={game.id} href={`/game/${game.slug}`} onClick={handleSuggestionClick} prefetch>
-									<button
-										className={`w-full h-[42px] flex gap-2 items-center p-2 hover:bg-gray-50 transition-colors text-left cursor-pointer`}
-									>
-										{game.cover?.image_id ? (
-											<Image
-												src={getIGDBImageUrl(game.cover.image_id, 'micro', false)}
-												width={30}
-												height={30}
-												alt={`${game.name} cover`}
-												className='rounded-md object-cover flex-shrink-0'
-											/>
-										) : (
-											<div className='w-[30px] h-[30px] bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
-												<span className='text-xs text-gray-400'>?</span>
-											</div>
-										)}
-										<span className='text-sm font-medium text-gray-900 truncate flex-1'>
-											<HighlightMatchingText text={game.name} searchTerm={inputValue} skipHighlighting={showingDefault} />
-										</span>
-									</button>
-								</Link>
-							))}
+						<div className='p-2 space-y-1'>
+							{suggestions.map((game, index) => {
+								const isSelected = index === selectedIndex
+								return (
+									<Link key={game.id} href={`/game/${game.slug}`} onClick={() => handleSuggestionClick(index)} prefetch>
+										<div
+											className={`w-full h-[50px] flex gap-3 items-center p-3 transition-all duration-150 text-left cursor-pointer ${
+												isSelected ? 'bg-pink-50 rounded-lg' : 'hover:bg-gray-50 rounded-lg'
+											}`}
+										>
+											{game.cover?.image_id ? (
+												<Image
+													src={getIGDBImageUrl(game.cover.image_id, 'micro', false)}
+													width={32}
+													height={32}
+													alt={`${game.name} cover`}
+													className='rounded-md object-cover flex-shrink-0'
+												/>
+											) : (
+												<div className='w-[32px] h-[32px] bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
+													<span className='text-xs text-gray-400'>?</span>
+												</div>
+											)}
+											<span className={`text-sm font-medium flex-1 leading-5 ${isSelected ? 'text-pink-700' : 'text-gray-900'}`}>
+												<HighlightMatchingText text={game.name} searchTerm={inputValue} skipHighlighting={showingDefault} />
+											</span>
+										</div>
+									</Link>
+								)
+							})}
 						</div>
 					) : inputValue.trim().length >= 2 ? (
 						<div className='px-4 py-4 text-sm text-gray-500 text-center'>No games found</div>
