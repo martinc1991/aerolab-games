@@ -27,7 +27,7 @@ export function Muted({ className, ...props }: HTMLAttributes<HTMLSpanElement>) 
 
 // Paragraph
 export function P({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-	return <p className={cn('text-[16px] leading-5 text-gray-900')} {...props} />
+	return <p className={cn('text-[16px] leading-5 text-gray-900', className)} {...props} />
 }
 
 export const Typography = {
