@@ -1,4 +1,5 @@
 import { GamesGallery } from '@/components/games-gallery'
+import { Typography } from '@/components/typography'
 import { IGDBGameDetails } from '@/lib/igdb/types'
 
 interface SimilarGamesProps {
@@ -9,7 +10,7 @@ export function SimilarGames(props: SimilarGamesProps) {
 	return (
 		<GamesGallery
 			games={props.games}
-			emptyState={<p className='text-sm font-medium leading-5 text-[#666666]'>No similar games available</p>}
+			emptyState={<Typography.Muted className='text-sm font-medium'>No similar games available</Typography.Muted>}
 		/>
 	)
 }

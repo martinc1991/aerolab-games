@@ -3,7 +3,7 @@
 import { SearchInput } from '@/components/search-input'
 import { ArrowBack } from '@/components/svg/arrow-back'
 import { Logo } from '@/components/svg/logo'
-import { Title } from '@/components/typography/title'
+import { Typography } from '@/components/typography'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -22,7 +22,7 @@ function MainHeader() {
 	return (
 		<div className='flex items-center gap-2 sm:justify-center'>
 			<GoHomeLink />
-			<Title>Gaming Haven Z</Title>
+			<Typography.H1>Gaming Haven Z</Typography.H1>
 		</div>
 	)
 }
@@ -34,8 +34,10 @@ function GoBackHeader() {
 		<div className='flex items-center gap-2 sm:w-[358px] sm:place-self-center'>
 			<GoHomeLink />
 			<button onClick={() => router.back()} className='flex items-center gap-2 px-3 cursor-pointer'>
-				<ArrowBack />
-				<span className='text-[16px] font-semibold'>Back</span>
+				<Typography.Highlighted className='text-[16px] font-semibold flex items-center gap-1'>
+					<ArrowBack />
+					Back
+				</Typography.Highlighted>
 			</button>
 		</div>
 	)

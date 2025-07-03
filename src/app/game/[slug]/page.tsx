@@ -6,7 +6,7 @@ import { SimilarGames } from '@/components/similar-games'
 import { CalendarIcon } from '@/components/svg/calendar-icon'
 import { PuzzlePieceIcon } from '@/components/svg/puzzle-piece-icon'
 import { StarIcon } from '@/components/svg/star-icon'
-import { Title } from '@/components/typography/title'
+import { Typography } from '@/components/typography'
 import { formatIGDBRating, formatIGDBTimestamp } from '@/lib/utils'
 import { getGameBySlug } from '@/services/igdb/games/get-details'
 import { getIGDBImageUrl } from '@/services/igdb/images'
@@ -89,7 +89,7 @@ export default async function GamePage({ params }: GamePageProps) {
 	const { slug } = await params
 	const game = await getGameBySlug(slug)
 
-	if (!game) return <p>Game not found</p>
+	if (!game) return <Typography.P>Game not found</Typography.P>
 
 	const developer = game.involved_companies.find((company) => company.developer)?.company.name
 
@@ -99,8 +99,8 @@ export default async function GamePage({ params }: GamePageProps) {
 				<GameImage className='max-w-1/3 min-w-[110px]' imageId={game.cover.image_id} imageSize='cover_big' alt={game.name} priority />
 				<div className='flex flex-col gap-6'>
 					<div className='flex flex-col gap-2'>
-						<Title className='sm:text-[24px]'>{game.name}</Title>
-						{developer && <span className='text-sm text-[#775C90] leading-5'>{developer}</span>}
+						<Typography.H1 className=''>{game.name}</Typography.H1>
+						{developer && <Typography.Muted className='text-sm text-[#775C90] leading-5'>{developer}</Typography.Muted>}
 					</div>
 					<CollectGameButton game={game} className='hidden sm:block w-[125px]' />
 				</div>
@@ -114,25 +114,25 @@ export default async function GamePage({ params }: GamePageProps) {
 				<Badge icon={<PuzzlePieceIcon />} title='Genre' value={game.genres.map((genre) => genre.name).join(', ')} />
 			</div>
 			<div className='flex flex-col gap-2'>
-				<span className='text-[16px] font-semibold leading-5'>Summary</span>
-				<p className='text-[16px] font-medium leading-5 text-[#666666]'>{game.summary}</p>
+				<Typography.H3>Summary</Typography.H3>
+				<Typography.P>{game.summary}</Typography.P>
 			</div>
 			<div className='flex flex-col gap-2'>
-				<span className='text-[16px] font-semibold leading-5'>Platforms</span>
-				<p className='text-[16px] font-medium leading-5 text-[#666666]'>{game.platforms.map((platform) => platform.name).join(', ')}</p>
+				<Typography.H3>Platforms</Typography.H3>
+				<Typography.P>{game.platforms.map((platform) => platform.name).join(', ')}</Typography.P>
 			</div>
 
 			<div className='flex flex-col gap-2'>
-				<span className='text-[16px] font-semibold leading-5'>Screenshots</span>
+				<Typography.H3>Screenshots</Typography.H3>
 				{game.screenshots ? (
 					<ScreenshotCarousel screenshots={game.screenshots} name={game.name} />
 				) : (
-					<p className='text-sm font-medium leading-5 text-[#666666]'>No screenshots available</p>
+					<Typography.P>No screenshots available</Typography.P>
 				)}
 			</div>
 
 			<div className='flex flex-col gap-2'>
-				<span className='text-[16px] font-semibold leading-5'>Similar Games</span>
+				<Typography.H3>Similar Games</Typography.H3>
 				<SimilarGames games={game.similar_games} />
 			</div>
 		</div>
