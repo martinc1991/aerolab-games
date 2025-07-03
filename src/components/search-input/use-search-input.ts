@@ -8,6 +8,7 @@ const CONFIG = {
 	DEBOUNCE_DELAY: 300,
 	MIN_SEARCH_LENGTH: 2,
 	BLUR_DELAY: 150,
+	MAX_SUGGESTIONS: 5,
 } as const
 
 type SearchState = 'idle' | 'loading' | 'error' | 'success'
@@ -22,6 +23,7 @@ export function useSearchInput() {
 
 	const inputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
+	const clearButtonRef = useRef<HTMLButtonElement>(null)
 
 	const { popularGames: defaultSuggestions, isLoadingPopular } = useCollectedGames()
 
@@ -34,6 +36,10 @@ export function useSearchInput() {
 	// Handler to prevent external navigation
 	const handleClickOutside = useCallback((event: MouseEvent) => {
 		const target = event.target as Node
+
+		// Check if the click is on the clear button (X button) and don't interfere with it
+		const isClearButton = clearButtonRef.current && clearButtonRef.current.contains(target)
+		if (isClearButton) return
 
 		const isOutsideInput = inputRef.current && !inputRef.current.contains(target)
 		const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(target)
@@ -95,7 +101,7 @@ export function useSearchInput() {
 			setShowingDefault(false)
 
 			try {
-				const results = await searchGameSuggestions(trimmedTerm)
+				const results = await searchGameSuggestions(trimmedTerm, CONFIG.MAX_SUGGESTIONS)
 				setSuggestions(results)
 				setSearchState('success')
 			} catch (error) {
@@ -214,6 +220,7 @@ export function useSearchInput() {
 		shouldShowDropdown,
 		inputRef,
 		dropdownRef,
+		clearButtonRef,
 		handleInputChange,
 		handleInputFocus,
 		handleClearClick,
