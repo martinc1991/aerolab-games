@@ -197,7 +197,7 @@ export function useSearchInput() {
 
 				case 'ArrowUp': {
 					e.preventDefault()
-					const prevIndex = selectedIndex > 0 ? selectedIndex - 1 : -1
+					const prevIndex = selectedIndex > 0 ? selectedIndex - 1 : suggestions.length - 1
 					setSelectedIndex(prevIndex)
 					break
 				}
