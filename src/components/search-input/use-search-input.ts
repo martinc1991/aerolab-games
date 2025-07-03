@@ -8,7 +8,7 @@ const CONFIG = {
 	DEBOUNCE_DELAY: 300,
 	MIN_SEARCH_LENGTH: 2,
 	BLUR_DELAY: 150,
-	MAX_SUGGESTIONS: 5,
+	MAX_SUGGESTIONS: 10,
 } as const
 
 type SearchState = 'idle' | 'loading' | 'error' | 'success'
@@ -66,6 +66,19 @@ export function useSearchInput() {
 	useEffect(() => {
 		setSelectedIndex(-1)
 	}, [suggestions, isOpen])
+
+	// Auto-scroll selected item into view when navigating with keyboard
+	useEffect(() => {
+		if (selectedIndex >= 0 && dropdownRef.current) {
+			const selectedElement = dropdownRef.current.querySelector(`[data-suggestion-index="${selectedIndex}"]`)
+			if (selectedElement) {
+				selectedElement.scrollIntoView({
+					behavior: 'smooth',
+					block: 'nearest',
+				})
+			}
+		}
+	}, [selectedIndex])
 
 	useEffect(() => {
 		if (isEmptySearch && isOpen && defaultSuggestions.length > 0) {
@@ -184,7 +197,7 @@ export function useSearchInput() {
 
 				case 'ArrowUp': {
 					e.preventDefault()
-					const prevIndex = selectedIndex > 0 ? selectedIndex - 1 : suggestions.length - 1
+					const prevIndex = selectedIndex > 0 ? selectedIndex - 1 : -1
 					setSelectedIndex(prevIndex)
 					break
 				}

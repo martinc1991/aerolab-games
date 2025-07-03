@@ -5,6 +5,7 @@ import { CloseIcon } from '@/components/svg/close-icon'
 import { SearchIcon } from '@/components/svg/search-icon'
 import { Input } from '@/components/ui/input'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
+import { cn } from '@/lib/utils'
 import { getIGDBImageUrl } from '@/services/igdb/imageService'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -60,11 +61,11 @@ export function SearchInput() {
 					onChange={handleInputChange}
 					onFocus={handleInputFocus}
 					onKeyDown={handleKeyDown}
-					className={`w-full bg-white shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-300 selection:bg-pink-200 selection:text-pink-800 pl-10 text-sm ${
-						inputValue ? 'pr-10' : 'pr-3'
-					} overflow-hidden text-ellipsis whitespace-nowrap ${
+					className={cn(
+						'w-full bg-white shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-300 selection:bg-pink-200 selection:text-pink-800 pl-10 text-sm overflow-hidden text-ellipsis whitespace-nowrap',
+						inputValue ? 'pr-10' : 'pr-3',
 						shouldShowDropdown ? 'rounded-t-xl rounded-b-none border-pink-300' : 'rounded-full border-pink-300'
-					}`}
+					)}
 				/>
 			</div>
 
@@ -108,11 +109,12 @@ interface SuggestionDropdownProps {
  */
 function SuggestionDropdown(props: SuggestionDropdownProps) {
 	return (
-		<div className='p-2 space-y-1'>
+		<div className='p-1 space-y-1 max-h-[282px] overflow-y-auto'>
 			{props.suggestions.map((game, index) => (
 				<SuggestionRow
 					key={game.id}
 					game={game}
+					index={index}
 					isSelected={index === props.selectedIndex}
 					onClick={() => props.handleSuggestionClick(index)}
 					inputValue={props.inputValue}
@@ -125,6 +127,7 @@ function SuggestionDropdown(props: SuggestionDropdownProps) {
 
 interface SuggestionRowProps {
 	game: IGDBGameSearchSuggestion
+	index: number
 	isSelected: boolean
 	onClick: () => void
 	inputValue: string
@@ -142,9 +145,11 @@ function SuggestionRow(props: SuggestionRowProps) {
 	return (
 		<Link key={props.game.id} href={`/game/${props.game.slug}`} onClick={props.onClick} prefetch>
 			<div
-				className={`w-full h-[50px] flex gap-3 items-center p-3 transition-all duration-150 text-left cursor-pointer ${
-					props.isSelected ? 'bg-pink-100 rounded-lg' : 'hover:bg-pink-50 rounded-lg'
-				}`}
+				data-suggestion-index={props.index}
+				className={cn(
+					'w-full h-[50px] flex gap-3 items-center p-2 transition-all duration-150 text-left cursor-pointer rounded-lg',
+					props.isSelected ? 'bg-pink-100' : 'hover:bg-pink-50'
+				)}
 			>
 				{props.game.cover?.image_id ? (
 					<Image
@@ -159,7 +164,7 @@ function SuggestionRow(props: SuggestionRowProps) {
 						<span className='text-xs text-gray-400'>?</span>
 					</div>
 				)}
-				<span className={`text-sm font-medium flex-1 leading-5 ${props.isSelected ? 'text-pink-700' : 'text-gray-900'}`}>
+				<span className={cn('text-sm font-medium flex-1 leading-5', props.isSelected ? 'text-pink-700' : 'text-gray-900')}>
 					<HighlightMatchingText text={props.game.name} searchTerm={props.inputValue} skipHighlighting={props.showingDefault} />
 				</span>
 			</div>
