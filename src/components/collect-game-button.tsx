@@ -1,33 +1,37 @@
 'use client'
 
-import { toast } from '@/components/toast'
 import { Button } from '@/components/ui/button'
+import { TOAST_DURATION } from '@/config/constants'
 import { IGDBGameDetails } from '@/lib/igdb/types'
 import { useCollectedGames } from '@/providers/collected-games'
-import { HTMLAttributes } from 'react'
+import { HTMLAttributes, useState } from 'react'
+import { useDebounceCallback } from 'usehooks-ts'
 
 interface CollectGameButtonProps extends HTMLAttributes<HTMLButtonElement> {
 	game: IGDBGameDetails
 }
 
 export function CollectGameButton({ className, ...props }: CollectGameButtonProps) {
-	const { collectGame, isGameCollected } = useCollectedGames()
+	const { collectGame, isGameCollected, removeCollectedGame } = useCollectedGames()
+	const [isDisabled, setIsDisabled] = useState(false)
+	const debounceResetDisabled = useDebounceCallback(() => setIsDisabled(false), TOAST_DURATION)
 
 	const isCollected = isGameCollected(props.game.id)
 
-	function handleCollectGame() {
-		if (isCollected) return
+	async function handleClick() {
+		if (isCollected) {
+			removeCollectedGame(props.game.id, props.game.name)
+		} else {
+			collectGame(props.game)
+		}
 
-		collectGame(props.game)
-		toast({
-			title: 'Game collected',
-			description: `${props.game.name} has been added to your collection`,
-		})
+		setIsDisabled(true)
+		debounceResetDisabled()
 	}
 
 	return (
-		<Button variant={isCollected ? 'collected' : 'collect'} onClick={handleCollectGame} className={className}>
-			{isCollected ? 'Collected' : 'Collect game'}
+		<Button variant={isCollected ? 'collected' : 'collect'} onClick={handleClick} className={className} disabled={isDisabled}>
+			{isCollected ? 'Remove from collection' : 'Collect game'}
 		</Button>
 	)
 }

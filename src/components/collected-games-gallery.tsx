@@ -1,19 +1,14 @@
 'use client'
 
-import { GamesGallery } from '@/components/games-gallery'
+import { GalleryGame, GamesGallery } from '@/components/games-gallery'
 import { EmptyGames } from '@/components/svg/empty-games'
-import { toast } from '@/components/toast'
 import { useCollectedGames } from '@/providers/collected-games'
 
 export function CollectedGamesGallery() {
 	const { games, removeCollectedGame } = useCollectedGames()
 
-	function handleDelete(game: { id: number; name: string }) {
-		removeCollectedGame(game.id)
-		toast({
-			title: 'Game deleted',
-			description: `${game.name} has been removed from your collection`,
-		})
+	function handleDelete(game: GalleryGame) {
+		removeCollectedGame(game.id, game.name)
 	}
 
 	return <GamesGallery games={games} onDelete={handleDelete} emptyState={<EmptyState />} priority />
