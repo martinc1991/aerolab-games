@@ -160,9 +160,7 @@ function SuggestionRow(props: SuggestionRowProps) {
 						className='rounded-md object-cover flex-shrink-0'
 					/>
 				) : (
-					<div className='w-[32px] h-[32px] bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
-						<span className='text-xs text-gray-400'>?</span>
-					</div>
+					<NoImagePlaceholder />
 				)}
 				<span className={cn('text-sm font-medium flex-1 leading-5', props.isSelected ? 'text-pink-700' : 'text-gray-900')}>
 					<HighlightMatchingText text={props.game.name} searchTerm={props.inputValue} skipHighlighting={props.showingDefault} />
@@ -183,4 +181,12 @@ function ErrorState() {
 }
 function NoResultsState() {
 	return <div className='px-4 py-4 text-sm text-gray-500 text-center'>No games found</div>
+}
+
+function NoImagePlaceholder() {
+	return (
+		<div className='w-[32px] h-[32px] bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center'>
+			<span className='text-xs text-gray-400'>?</span>
+		</div>
+	)
 }
