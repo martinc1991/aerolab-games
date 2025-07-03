@@ -26,7 +26,7 @@ export async function getSearchSuggestions(input: string, limit: number = 10): P
   fields ${suggestionFields};
   limit ${limit};
   where ${wordConditions} & version_parent = null;
-  sort rating desc;
+  sort total_rating_count desc; 
   `
 
 	return igdbQuery<IGDBGameSearchSuggestion[]>(query)
@@ -41,8 +41,8 @@ export async function getPopularGamesSuggestions(limit: number = 10): Promise<IG
 	const query = `
   fields ${suggestionFields};
   limit ${limit};
-  sort total_rating desc;
-  where total_rating_count > 50 & total_rating != null;
+  sort total_rating_count desc;
+  where version_parent = null;
   `
 
 	return igdbQuery<IGDBGameSearchSuggestion[]>(query)
