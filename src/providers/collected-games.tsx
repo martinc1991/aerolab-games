@@ -27,13 +27,6 @@ export interface GamesActions {
 
 export type CollectedGamesContextType = CollectedGamesState & GamesActions
 
-const defaultState: CollectedGamesState = {
-	sortBy: SortBy.LAST_ADDED,
-	games: [],
-	defaultSuggestions: [],
-	isLoadingDefaultSuggestions: false,
-}
-
 const CollectedGamesContext = createContext<CollectedGamesContextType | undefined>(undefined)
 
 export interface CollectedGamesProviderProps {
