@@ -3,13 +3,13 @@
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { getPopularGamesSuggestions, getSearchSuggestions } from '@/services/igdb'
 
-export async function searchGameSuggestions(searchTerm: string): Promise<IGDBGameSearchSuggestion[]> {
+export async function searchGameSuggestions(searchTerm: string, limit = 5): Promise<IGDBGameSearchSuggestion[]> {
 	try {
 		if (!searchTerm.trim() || searchTerm.length < 2) {
 			return []
 		}
 
-		const results = await getSearchSuggestions(searchTerm, 5)
+		const results = await getSearchSuggestions(searchTerm, limit)
 
 		return results
 	} catch (error) {
@@ -18,9 +18,9 @@ export async function searchGameSuggestions(searchTerm: string): Promise<IGDBGam
 	}
 }
 
-export async function getPopularGameSuggestions(): Promise<IGDBGameSearchSuggestion[]> {
+export async function getPopularGameSuggestions(limit = 5): Promise<IGDBGameSearchSuggestion[]> {
 	try {
-		const results = await getPopularGamesSuggestions(5)
+		const results = await getPopularGamesSuggestions(limit)
 		return results
 	} catch (error) {
 		console.error('Failed to fetch popular games:', error)
