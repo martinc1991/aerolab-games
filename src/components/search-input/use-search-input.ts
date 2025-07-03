@@ -30,6 +30,32 @@ export function useSearchInput() {
 	const isValidSearch = inputValue.trim().length >= CONFIG.MIN_SEARCH_LENGTH
 	const shouldShowDropdown = isOpen && (isEmptySearch || isValidSearch)
 
+	// Handler to prevent external navigation
+	const handleClickOutside = useCallback((event: MouseEvent) => {
+		const target = event.target as Node
+
+		const isOutsideInput = inputRef.current && !inputRef.current.contains(target)
+		const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(target)
+
+		if (isOutsideInput && isOutsideDropdown) {
+			event.preventDefault()
+			event.stopPropagation()
+			event.stopImmediatePropagation()
+
+			setIsOpen(false)
+		}
+	}, [])
+
+	useEffect(() => {
+		if (!isOpen) return
+
+		document.addEventListener('click', handleClickOutside, { capture: true })
+
+		return () => {
+			document.removeEventListener('click', handleClickOutside, { capture: true })
+		}
+	}, [isOpen, handleClickOutside])
+
 	useEffect(() => {
 		if (isEmptySearch && isOpen && defaultSuggestions.length > 0) {
 			if (!showingDefault || suggestions !== defaultSuggestions) {
@@ -109,15 +135,6 @@ export function useSearchInput() {
 		}
 	}, [isValidSearch, suggestions.length, isLoading, debouncedSearch, performSearch, inputValue])
 
-	const handleInputBlur = useCallback(() => {
-		setTimeout(() => {
-			const isClickingOutside = !dropdownRef.current?.contains(document.activeElement)
-			if (isClickingOutside) {
-				setIsOpen(false)
-			}
-		}, CONFIG.BLUR_DELAY)
-	}, [])
-
 	const handleClearClick = useCallback(() => {
 		resetSearch()
 	}, [resetSearch])
@@ -148,7 +165,6 @@ export function useSearchInput() {
 		dropdownRef,
 		handleInputChange,
 		handleInputFocus,
-		handleInputBlur,
 		handleClearClick,
 		handleSuggestionClick,
 		handleEscapeKey,

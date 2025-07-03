@@ -27,7 +27,6 @@ export function SearchInput() {
 		// Event handlers
 		handleInputChange,
 		handleInputFocus,
-		handleInputBlur,
 		handleClearClick,
 		handleSuggestionClick,
 		handleEscapeKey,
@@ -56,7 +55,6 @@ export function SearchInput() {
 					value={inputValue}
 					onChange={handleInputChange}
 					onFocus={handleInputFocus}
-					onBlur={handleInputBlur}
 					onKeyDown={handleEscapeKey}
 					className={`w-full bg-white shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-300 selection:bg-pink-200 selection:text-pink-800 pl-10 text-sm ${
 						inputValue ? 'pr-10' : 'pr-3'
