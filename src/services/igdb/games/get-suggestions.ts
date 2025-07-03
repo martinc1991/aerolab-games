@@ -1,21 +1,30 @@
 import { igdbQuery } from '@/lib/igdb/api'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 
+const suggestionFields = 'name, cover.image_id, slug'
+
 /**
  * Get search suggestions based on partial input
- * @param partialName - Partial game name
+ * @param input - Partial game name
  * @param limit - Maximum number of suggestions (default: 10)
- * @returns Promise<IGDBGame[]>
+ * @returns Promise<IGDBGameSearchSuggestion[]>
  */
-export async function getSearchSuggestions(partialName: string, limit: number = 10): Promise<IGDBGameSearchSuggestion[]> {
-	if (!partialName.trim() || partialName.length < 2) {
-		return []
-	}
+export async function getSearchSuggestions(input: string, limit: number = 10): Promise<IGDBGameSearchSuggestion[]> {
+	if (!input.trim() || input.length < 2) return []
 
-	const query = `fields name, cover.image_id, slug;
-limit ${limit};
-where name ~ *"${partialName}"* & version_parent = null;
-sort rating desc;`
+	const words = input
+		.trim()
+		.split(' ')
+		.filter((word) => word.length > 0)
+
+	const wordConditions = words.map((word) => `name ~ *"${word}"*`).join(' & ')
+
+	const query = `
+  fields ${suggestionFields};
+  limit ${limit};
+  where ${wordConditions} & version_parent = null;
+  sort rating desc;
+  `
 
 	return igdbQuery<IGDBGameSearchSuggestion[]>(query)
 }
@@ -23,13 +32,15 @@ sort rating desc;`
 /**
  * Get popular games based on rating
  * @param limit - Maximum number of results (default: 10)
- * @returns Promise<IGDBGame[]>
+ * @returns Promise<IGDBGameSearchSuggestion[]>
  */
 export async function getPopularGamesSuggestions(limit: number = 10): Promise<IGDBGameSearchSuggestion[]> {
-	const query = `fields id, name, slug, cover.image_id;
-limit ${limit};
-sort total_rating desc;
-where total_rating_count > 50 & total_rating != null;`
+	const query = `
+  fields ${suggestionFields};
+  limit ${limit};
+  sort total_rating desc;
+  where total_rating_count > 50 & total_rating != null;
+  `
 
 	return igdbQuery<IGDBGameSearchSuggestion[]>(query)
 }

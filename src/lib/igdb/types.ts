@@ -25,7 +25,7 @@ export interface IGDBGameDetails {
 
 export interface IGDBGameSearchSuggestion {
 	id: number
-	cover: { id: number; image_id: string }
+	cover?: { id: number; image_id: string }
 	name: string
 	slug: string
 }
