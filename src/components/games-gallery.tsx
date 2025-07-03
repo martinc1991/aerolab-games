@@ -41,7 +41,13 @@ function GameCard(props: GameCardProps) {
 	return (
 		<div className='relative cursor-pointer h-full'>
 			<Link href={`/game/${props.slug}`} prefetch className='block h-full'>
-				<GameImage imageId={props.cover.image_id} alt={props.name} priority={props.priority} imageSize='cover_big' />
+				<GameImage
+					imageId={props.cover.image_id}
+					alt={props.name}
+					priority={props.priority}
+					imageSize='cover_big'
+					sizes='(max-width: 768px) 150px, 175px'
+				/>
 			</Link>
 			{props.onDelete && (
 				<div
