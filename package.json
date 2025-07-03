@@ -9,7 +9,8 @@
 		"ui:add": "pnpm dlx shadcn@latest add",
 		"lint": "next lint",
 		"format": "prettier --write .",
-		"test": "jest"
+		"test": "jest",
+		"test:coverage": "jest --coverage"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.3",
