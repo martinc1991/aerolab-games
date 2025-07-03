@@ -50,3 +50,11 @@ export function sanitizeToken(s: string): string {
 		.replace(/[^A-Za-z0-9]/g, '') // remove everything except letters & digits
 		.toLowerCase()
 }
+
+/**
+ * Sleep for the specified number of milliseconds
+ * @param ms - Milliseconds to sleep
+ */
+export function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms))
+}
