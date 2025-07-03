@@ -1,5 +1,6 @@
 import { igdbQuery } from '@/lib/igdb/api'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
+import { getRelatedGames } from '@/services/igdb/games/get-related-games'
 
 const suggestionFields = 'name, cover.image_id, slug'
 
@@ -43,4 +44,26 @@ export async function getPopularGamesSuggestions(limit: number = 10): Promise<IG
   `
 
 	return igdbQuery<IGDBGameSearchSuggestion[]>(query)
+}
+
+/**
+ * Get related games based on provided game id
+ * @param gameId - The id of the game to get related games for
+ * @param limit - Maximum number of results (default: 10)
+ * @returns Promise<IGDBGameSearchSuggestion[]>
+ */
+export async function getRelatedGamesSuggestions(gameId: number, limit: number = 10): Promise<IGDBGameSearchSuggestion[]> {
+	if (!gameId || gameId <= 0) return []
+
+	const { similar_games: similarGamesIds } = await getRelatedGames(gameId)
+
+	if (similarGamesIds.length === 0) return []
+
+	const relatedSuggestionsQuery = `
+	fields ${suggestionFields};
+  limit ${limit};
+	where id = (${similarGamesIds.join(',')});
+	`
+
+	return igdbQuery<IGDBGameSearchSuggestion[]>(relatedSuggestionsQuery)
 }
