@@ -1,6 +1,6 @@
 import { LOCAL_STORAGE_COLLECTED_GAMES_KEY } from '@/config/constants'
 import { IGDBGameDetails } from '@/lib/igdb/types'
-import { CollectedGame } from '@/providers/collected-games'
+import { CollectedGame } from '@/types'
 import { useCallback } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 

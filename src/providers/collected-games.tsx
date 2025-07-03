@@ -1,35 +1,20 @@
 'use client'
 
 import { LoadingSpinner } from '@/components/loading-spinner'
-import { toast } from '@/components/toast'
-import { getPopularGameSuggestions, getRelatedGameSuggestions } from '@/lib/actions/game-actions'
+import { useGameActions } from '@/lib/hooks/use-game-actions'
+import { useGameSorting } from '@/lib/hooks/use-game-sorting'
 import { useGameStorage } from '@/lib/hooks/use-game-storage'
+import { useDefaultGameSuggestions } from '@/lib/hooks/use-game-suggestions'
+import { useUrlSort } from '@/lib/hooks/use-url-sort'
 import { IGDBGameDetails, IGDBGameSearchSuggestion } from '@/lib/igdb/types'
-import { getRandomElement } from '@/lib/utils'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { createContext, Suspense, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-
-export const enum SortBy {
-	LAST_ADDED = 'last-added',
-	NEWEST = 'newest',
-	OLDEST = 'oldest',
-}
-const SORT_BY_PARAM = 'sortBy'
-
-export interface CollectedGame {
-	id: number
-	dateCollected: number
-	dateReleased: number
-	name: string
-	slug: string
-	cover: { id: number; image_id: string }
-}
+import { CollectedGame, SortBy } from '@/types'
+import { createContext, Suspense, useContext, type ReactNode } from 'react'
 
 export interface CollectedGamesState {
 	sortBy: SortBy
 	games: CollectedGame[]
 	defaultSuggestions: IGDBGameSearchSuggestion[]
-	isLoadingPopular: boolean
+	isLoadingDefaultSuggestions: boolean
 }
 
 export interface GamesActions {
@@ -46,7 +31,7 @@ const defaultState: CollectedGamesState = {
 	sortBy: SortBy.LAST_ADDED,
 	games: [],
 	defaultSuggestions: [],
-	isLoadingPopular: false,
+	isLoadingDefaultSuggestions: false,
 }
 
 const CollectedGamesContext = createContext<CollectedGamesContextType | undefined>(undefined)
@@ -56,114 +41,23 @@ export interface CollectedGamesProviderProps {
 	initialGames?: CollectedGame[]
 }
 
-const validSortBy = [SortBy.LAST_ADDED, SortBy.NEWEST, SortBy.OLDEST] as const
-
-function isValidSortBy(value: string | null): value is SortBy {
-	return value !== null && validSortBy.includes(value as SortBy)
-}
-
 function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 	const gameStorage = useGameStorage()
-	const router = useRouter()
-	const searchParams = useSearchParams()
-
-	const initialSortBy = (() => {
-		const urlSortBy = searchParams.get(SORT_BY_PARAM)
-		return isValidSortBy(urlSortBy) ? urlSortBy : defaultState.sortBy
-	})()
-
-	const [sortBy, setSortBy] = useState<SortBy>(initialSortBy)
-	const [defaultSuggestions, setDefaultSuggestions] = useState<IGDBGameSearchSuggestion[]>(defaultState.defaultSuggestions)
-	const [isLoadingPopular, setIsLoadingPopular] = useState<boolean>(defaultState.isLoadingPopular)
-
-	const sortedGames = useMemo(() => {
-		const gamesCopy = [...gameStorage.games]
-
-		return gamesCopy.sort((a, b) => {
-			switch (sortBy) {
-				case SortBy.NEWEST:
-					return b.dateReleased - a.dateReleased
-				case SortBy.OLDEST:
-					return a.dateReleased - b.dateReleased
-				case SortBy.LAST_ADDED:
-				default:
-					return b.dateCollected - a.dateCollected
-			}
-		})
-	}, [gameStorage.games, sortBy])
-
-	useEffect(() => {
-		async function fetchPopularGames() {
-			setIsLoadingPopular(true)
-			try {
-				let suggestions: IGDBGameSearchSuggestion[] = []
-
-				if (gameStorage.games.length === 0) {
-					suggestions = await getPopularGameSuggestions()
-				} else {
-					const randomGameId = getRandomElement(gameStorage.games).id
-
-					suggestions = await getRelatedGameSuggestions(randomGameId, 5)
-				}
-
-				setDefaultSuggestions(suggestions)
-			} catch (error) {
-				console.error('Failed to prefetch popular games:', error)
-			} finally {
-				setIsLoadingPopular(false)
-			}
-		}
-
-		fetchPopularGames()
-	}, [])
-
-	useEffect(() => {
-		const urlSortBy = searchParams.get(SORT_BY_PARAM)
-
-		if (urlSortBy && !isValidSortBy(urlSortBy)) {
-			router.replace(window.location.pathname)
-		}
-	}, [searchParams, router])
-
-	function handleSetSortBy(newSortBy: SortBy) {
-		setSortBy(newSortBy)
-
-		const current = new URLSearchParams(Array.from(searchParams.entries()))
-		current.set(SORT_BY_PARAM, newSortBy)
-		const search = current.toString()
-		const query = search ? `?${search}` : ''
-
-		router.replace(`${window.location.pathname}${query}`)
-	}
-
-	function collectGame(game: IGDBGameDetails) {
-		gameStorage.collectGame(game)
-
-		toast({
-			title: 'Game collected',
-			description: `${game.name} has been added to your collection.`,
-		})
-	}
-
-	function removeCollectedGame(id: number, name: string) {
-		gameStorage.removeCollectedGame(id)
-
-		toast({
-			title: 'Game removed',
-			description: `${name} has been removed from your collection`,
-		})
-	}
+	const { sortBy, setSortBy } = useUrlSort()
+	const sortedGames = useGameSorting(gameStorage.games, sortBy)
+	const { defaultSuggestions, setDefaultSuggestions, isLoading } = useDefaultGameSuggestions(gameStorage.games)
+	const gameActions = useGameActions()
 
 	const contextValue: CollectedGamesContextType = {
 		sortBy,
-		setSortBy: handleSetSortBy,
+		setSortBy,
 		games: sortedGames,
 		defaultSuggestions,
 		setDefaultSuggestions,
-		isLoadingPopular,
-		collectGame,
-		removeCollectedGame,
-		isGameCollected: gameStorage.isGameCollected,
+		isLoadingDefaultSuggestions: isLoading,
+		collectGame: gameActions.collectGame,
+		removeCollectedGame: gameActions.removeCollectedGame,
+		isGameCollected: gameActions.isGameCollected,
 	}
 
 	return <CollectedGamesContext.Provider value={contextValue}>{children}</CollectedGamesContext.Provider>
