@@ -4,140 +4,153 @@ import { useCollectedGames } from '@/providers/collected-games'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDebounceCallback } from 'usehooks-ts'
 
+const CONFIG = {
+	DEBOUNCE_DELAY: 300,
+	MIN_SEARCH_LENGTH: 2,
+	BLUR_DELAY: 150,
+} as const
+
+type SearchState = 'idle' | 'loading' | 'error' | 'success'
+
 export function useSearchInput() {
 	const [inputValue, setInputValue] = useState('')
 	const [suggestions, setSuggestions] = useState<IGDBGameSearchSuggestion[]>([])
 	const [isOpen, setIsOpen] = useState(false)
-	const [isLoading, setIsLoading] = useState(false)
-	const [showingPopular, setShowingPopular] = useState(false)
+	const [searchState, setSearchState] = useState<SearchState>('idle')
+	const [showingDefault, setShowingDefault] = useState(false)
+
 	const inputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 
-	const { popularGames, isLoadingPopular } = useCollectedGames()
+	const { popularGames: defaultSuggestions, isLoadingPopular } = useCollectedGames()
 
-	const fetchSuggestions = useCallback(
-		async (searchTerm: string) => {
-			if (searchTerm.trim().length === 0) {
-				// Show prefetched popular games when input is empty
-				if (isOpen) {
-					setSuggestions(popularGames)
-					setShowingPopular(true)
-					setIsLoading(isLoadingPopular)
-				}
-				return
-			}
-
-			if (searchTerm.trim().length < 2) {
-				setSuggestions([])
-				setShowingPopular(false)
-				return
-			}
-
-			setIsLoading(true)
-			setShowingPopular(false)
-			try {
-				const results = await searchGameSuggestions(searchTerm)
-				setSuggestions(results)
-			} catch (error) {
-				console.error('Failed to fetch suggestions:', error)
-				setSuggestions([])
-			} finally {
-				setIsLoading(false)
-			}
-		},
-		[isOpen, popularGames, isLoadingPopular]
-	)
-
-	const debouncedFetchSuggestions = useDebounceCallback(fetchSuggestions, 300)
+	const isLoading = searchState === 'loading' || (showingDefault && isLoadingPopular)
+	const hasError = searchState === 'error'
+	const isEmptySearch = inputValue.trim().length === 0
+	const isValidSearch = inputValue.trim().length >= CONFIG.MIN_SEARCH_LENGTH
+	const shouldShowDropdown = isOpen && (isEmptySearch || isValidSearch)
 
 	useEffect(() => {
-		debouncedFetchSuggestions(inputValue)
-	}, [inputValue, debouncedFetchSuggestions])
-
-	// Event handlers
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(e.target.value)
-		setIsOpen(true)
-	}
-
-	const handleFocus = async () => {
-		setIsOpen(true)
-
-		// If input is empty, immediately show popular games
-		if (inputValue.trim().length === 0) {
-			setSuggestions(popularGames)
-			setShowingPopular(true)
-			setIsLoading(isLoadingPopular)
-		}
-		// If there's text, always ensure we have suggestions
-		else if (inputValue.trim().length >= 2) {
-			setShowingPopular(false)
-			if (suggestions.length === 0 && !isLoading) {
-				// Cancel any pending debounced calls and fetch immediately
-				debouncedFetchSuggestions.cancel()
-				await fetchSuggestions(inputValue)
+		if (isEmptySearch && isOpen && defaultSuggestions.length > 0) {
+			if (!showingDefault || suggestions !== defaultSuggestions) {
+				setSuggestions(defaultSuggestions)
+				setShowingDefault(true)
+				setSearchState('success')
 			}
 		}
-	}
+	}, [isEmptySearch, isOpen, defaultSuggestions, showingDefault, suggestions])
 
-	const handleBlur = () => {
-		setTimeout(() => {
-			if (!dropdownRef.current?.contains(document.activeElement)) {
-				setIsOpen(false)
-			}
-		}, 150)
-	}
-
-	const handleClear = () => {
-		debouncedFetchSuggestions.cancel()
-
-		setInputValue('')
+	const clearSuggestions = useCallback(() => {
 		setSuggestions([])
-		setShowingPopular(false)
+		setShowingDefault(false)
+		setSearchState('idle')
+	}, [])
+
+	const performSearch = useCallback(
+		async (searchTerm: string) => {
+			const trimmedTerm = searchTerm.trim()
+
+			if (trimmedTerm.length === 0) {
+				return
+			}
+
+			if (trimmedTerm.length < CONFIG.MIN_SEARCH_LENGTH) {
+				clearSuggestions()
+				return
+			}
+
+			setSearchState('loading')
+			setShowingDefault(false)
+
+			try {
+				const results = await searchGameSuggestions(trimmedTerm)
+				setSuggestions(results)
+				setSearchState('success')
+			} catch (error) {
+				console.error('Search failed:', error)
+				setSuggestions([])
+				setSearchState('error')
+			}
+		},
+		[clearSuggestions]
+	)
+
+	const debouncedSearch = useDebounceCallback(performSearch, CONFIG.DEBOUNCE_DELAY)
+
+	const resetSearch = useCallback(() => {
+		debouncedSearch.cancel()
+		setInputValue('')
+		clearSuggestions()
 		setIsOpen(false)
 		inputRef.current?.focus()
-	}
+	}, [debouncedSearch, clearSuggestions])
 
-	const handleSuggestionClick = (game: IGDBGameSearchSuggestion) => {
-		setInputValue(game.name)
+	const closeDropdown = useCallback(() => {
+		debouncedSearch.cancel()
 		setIsOpen(false)
 		inputRef.current?.blur()
-		setInputValue('')
-	}
+	}, [debouncedSearch])
 
-	const handleKeyDown = (e: React.KeyboardEvent) => {
-		if (e.key === 'Escape') {
-			debouncedFetchSuggestions.cancel()
-			setIsOpen(false)
-			inputRef.current?.blur()
+	useEffect(() => {
+		debouncedSearch(inputValue)
+	}, [inputValue, debouncedSearch])
+
+	const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+		setInputValue(e.target.value)
+		setIsOpen(true)
+	}, [])
+
+	const handleInputFocus = useCallback(async () => {
+		setIsOpen(true)
+
+		if (isValidSearch && suggestions.length === 0 && !isLoading) {
+			debouncedSearch.cancel()
+			await performSearch(inputValue)
 		}
-	}
+	}, [isValidSearch, suggestions.length, isLoading, debouncedSearch, performSearch, inputValue])
 
-	// Derived state
-	const shouldShowDropdown =
-		isOpen &&
-		(inputValue.trim().length === 0 || // Show popular games when empty
-			inputValue.trim().length >= 2) // Show search results when typing
+	const handleInputBlur = useCallback(() => {
+		setTimeout(() => {
+			const isClickingOutside = !dropdownRef.current?.contains(document.activeElement)
+			if (isClickingOutside) {
+				setIsOpen(false)
+			}
+		}, CONFIG.BLUR_DELAY)
+	}, [])
+
+	const handleClearClick = useCallback(() => {
+		resetSearch()
+	}, [resetSearch])
+
+	const handleSuggestionClick = useCallback(() => {
+		closeDropdown()
+		setInputValue('')
+	}, [closeDropdown])
+
+	const handleEscapeKey = useCallback(
+		(e: React.KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				closeDropdown()
+			}
+		},
+		[closeDropdown]
+	)
 
 	return {
-		// State
 		inputValue,
 		suggestions,
 		isOpen,
 		isLoading,
-		showingPopular,
+		hasError,
+		showingDefault,
 		shouldShowDropdown,
-
-		// Refs
 		inputRef,
 		dropdownRef,
-
-		// Handlers
 		handleInputChange,
-		handleFocus,
-		handleBlur,
-		handleClear,
+		handleInputFocus,
+		handleInputBlur,
+		handleClearClick,
 		handleSuggestionClick,
-		handleKeyDown,
+		handleEscapeKey,
 	}
 }

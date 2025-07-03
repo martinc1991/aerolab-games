@@ -11,25 +11,26 @@ import { useSearchInput } from './use-search-input'
 
 export function SearchInput() {
 	const {
-		// State
+		// Input state
 		inputValue,
 		suggestions,
 		isOpen,
 		isLoading,
-		showingPopular,
+		hasError,
+		showingDefault,
 		shouldShowDropdown,
 
 		// Refs
 		inputRef,
 		dropdownRef,
 
-		// Handlers
+		// Event handlers
 		handleInputChange,
-		handleFocus,
-		handleBlur,
-		handleClear,
+		handleInputFocus,
+		handleInputBlur,
+		handleClearClick,
 		handleSuggestionClick,
-		handleKeyDown,
+		handleEscapeKey,
 	} = useSearchInput()
 
 	return (
@@ -41,7 +42,7 @@ export function SearchInput() {
 
 				{inputValue && (
 					<button
-						onClick={handleClear}
+						onClick={handleClearClick}
 						className='absolute right-3 top-1/2 transform -translate-y-1/2 z-10 w-4 h-4 flex items-center justify-center hover:opacity-70 transition-opacity cursor-pointer'
 						type='button'
 					>
@@ -54,9 +55,9 @@ export function SearchInput() {
 					placeholder='Search games...'
 					value={inputValue}
 					onChange={handleInputChange}
-					onFocus={handleFocus}
-					onBlur={handleBlur}
-					onKeyDown={handleKeyDown}
+					onFocus={handleInputFocus}
+					onBlur={handleInputBlur}
+					onKeyDown={handleEscapeKey}
 					className={`w-full bg-white shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-300 selection:bg-pink-200 selection:text-pink-800 pl-10 text-sm ${
 						inputValue ? 'pr-10' : 'pr-3'
 					} overflow-hidden text-ellipsis whitespace-nowrap ${
@@ -72,12 +73,14 @@ export function SearchInput() {
 				>
 					{isLoading ? (
 						<div className='px-4 py-4 text-sm text-gray-500 text-center'>
-							{showingPopular ? 'Loading popular games...' : 'Searching games...'}
+							{showingDefault ? 'Loading suggestions...' : 'Searching games...'}
 						</div>
+					) : hasError ? (
+						<div className='px-4 py-4 text-sm text-red-500 text-center'>Search failed. Please try again.</div>
 					) : suggestions.length > 0 ? (
 						<div className='p-2'>
 							{suggestions.map((game) => (
-								<Link key={game.id} href={`/game/${game.slug}`} onClick={() => handleSuggestionClick(game)} prefetch>
+								<Link key={game.id} href={`/game/${game.slug}`} onClick={handleSuggestionClick} prefetch>
 									<button
 										className={`w-full h-[42px] flex gap-2 items-center p-2 hover:bg-gray-50 transition-colors text-left cursor-pointer`}
 									>
@@ -95,7 +98,7 @@ export function SearchInput() {
 											</div>
 										)}
 										<span className='text-sm font-medium text-gray-900 truncate flex-1'>
-											<HighlightMatchingText text={game.name} searchTerm={inputValue} skipHighlighting={showingPopular} />
+											<HighlightMatchingText text={game.name} searchTerm={inputValue} skipHighlighting={showingDefault} />
 										</span>
 									</button>
 								</Link>
