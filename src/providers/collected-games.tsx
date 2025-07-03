@@ -1,6 +1,7 @@
 'use client'
 
 import { LoadingSpinner } from '@/components/loading-spinner'
+import { toast } from '@/components/toast'
 import { getPopularGameSuggestions } from '@/lib/actions/game-actions'
 import { useGameStorage } from '@/lib/hooks/use-game-storage'
 import { IGDBGameDetails, IGDBGameSearchSuggestion } from '@/lib/igdb/types'
@@ -34,7 +35,7 @@ export interface GamesActions {
 	setSortBy: (sortBy: SortBy) => void
 	setPopularGames: (popularGames: IGDBGameSearchSuggestion[]) => void
 	collectGame: (game: IGDBGameDetails) => void
-	removeCollectedGame: (gameId: number) => boolean
+	removeCollectedGame: (id: number, name: string) => void
 	isGameCollected: (gameId: number) => boolean
 }
 
@@ -125,6 +126,24 @@ function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 		router.replace(`${window.location.pathname}${query}`)
 	}
 
+	function collectGame(game: IGDBGameDetails) {
+		gameStorage.collectGame(game)
+
+		toast({
+			title: 'Game collected',
+			description: `${game.name} has been added to your collection.`,
+		})
+	}
+
+	function removeCollectedGame(id: number, name: string) {
+		gameStorage.removeCollectedGame(id)
+
+		toast({
+			title: 'Game removed',
+			description: `${name} has been removed from your collection`,
+		})
+	}
+
 	const contextValue: CollectedGamesContextType = {
 		sortBy,
 		setSortBy: handleSetSortBy,
@@ -132,8 +151,8 @@ function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 		popularGames,
 		setPopularGames,
 		isLoadingPopular,
-		collectGame: gameStorage.collectGame,
-		removeCollectedGame: gameStorage.removeCollectedGame,
+		collectGame,
+		removeCollectedGame,
 		isGameCollected: gameStorage.isGameCollected,
 	}
 

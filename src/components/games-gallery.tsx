@@ -4,7 +4,7 @@ import { GameImage } from '@/components/game-image'
 import { TrashCan } from '@/components/svg/trash-can'
 import Link from 'next/link'
 
-interface GalleryGame {
+export interface GalleryGame {
 	id: number
 	slug: string
 	cover: { id: number; image_id: string }
