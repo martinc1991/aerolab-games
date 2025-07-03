@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { getIGDBImageWithDimensions, IGDBImageSize } from '@/services/igdb'
+import { getIGDBImageWithDimensions, IGDBImageSize } from '@/services/igdb/images'
 import Image, { ImageProps } from 'next/image'
 
 interface GameImageProps extends Omit<ImageProps, 'src' | 'width' | 'height'> {

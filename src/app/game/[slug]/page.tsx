@@ -9,7 +9,7 @@ import { StarIcon } from '@/components/svg/star-icon'
 import { Title } from '@/components/typography/title'
 import { formatIGDBRating, formatIGDBTimestamp } from '@/lib/utils'
 import { getGameBySlug } from '@/services/igdb/games/get-details'
-import { getIGDBImageUrl } from '@/services/igdb/imageService'
+import { getIGDBImageUrl } from '@/services/igdb/images'
 import type { Metadata } from 'next'
 
 interface GamePageProps {

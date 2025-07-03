@@ -1,7 +1,7 @@
 'use server'
 
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
-import { getPopularGamesSuggestions, getRelatedGamesSuggestions, getSearchSuggestions } from '@/services/igdb'
+import { getPopularGamesSuggestions, getRelatedGamesSuggestions, getSearchSuggestions } from '@/services/igdb/games'
 
 export async function searchGameSuggestions(searchTerm: string, limit = 5): Promise<IGDBGameSearchSuggestion[]> {
 	try {

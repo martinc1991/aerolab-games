@@ -1,7 +1,7 @@
 import { igdbQuery } from '@/lib/igdb/api'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { sanitizeToken } from '@/lib/utils'
-import { getRelatedGames } from '@/services/igdb/games/get-related-games'
+import { getRelatedGames } from '@/services/igdb/games'
 
 const suggestionFields = 'name, cover.image_id, slug'
 
