@@ -7,6 +7,7 @@ import { CalendarIcon } from '@/components/svg/calendar-icon'
 import { PuzzlePieceIcon } from '@/components/svg/puzzle-piece-icon'
 import { StarIcon } from '@/components/svg/star-icon'
 import { Typography } from '@/components/typography'
+import { APP_DESCRIPTION, APP_NAME } from '@/config/constants'
 import { formatIGDBRating, formatIGDBTimestamp } from '@/lib/utils'
 import { getGameBySlug } from '@/services/igdb/games/get-details'
 import { getIGDBImageUrl } from '@/services/igdb/images'
@@ -37,8 +38,8 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 
 	const coverImageUrl = game.cover?.image_id ? getIGDBImageUrl(game.cover.image_id, 'cover_big') : null
 
-	const description = `Collect ${game.name}${developer ? ` by ${developer}` : ''}.`
-	const title = `${game.name} | Aerolab Games`
+	const description = `Collect ${game.name}${developer ? ` by ${developer}` : ''}. ${APP_DESCRIPTION}`
+	const title = `${game.name} | ${APP_NAME}`
 
 	return {
 		title,
@@ -55,6 +56,9 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 		openGraph: {
 			title,
 			description,
+			url: `https://aerolab-games.vercel.app/game/${slug}`,
+			siteName: APP_NAME,
+			locale: 'en_US',
 			type: 'website',
 			...(coverImageUrl && {
 				images: [

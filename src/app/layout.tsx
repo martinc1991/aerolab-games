@@ -1,4 +1,5 @@
 import { Header } from '@/components/header'
+import { APP_DESCRIPTION, APP_NAME } from '@/config/constants'
 import { RootProvider } from '@/providers'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -11,8 +12,21 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-	title: 'Aerolab Games',
-	description: 'Aerolab Games',
+	title: APP_NAME,
+	description: APP_DESCRIPTION,
+	openGraph: {
+		title: APP_NAME,
+		description: APP_DESCRIPTION,
+		url: 'https://aerolab-games.vercel.app/',
+		siteName: APP_NAME,
+		locale: 'en_US',
+		type: 'website',
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: APP_NAME,
+		description: APP_DESCRIPTION,
+	},
 }
 
 export default function RootLayout({
