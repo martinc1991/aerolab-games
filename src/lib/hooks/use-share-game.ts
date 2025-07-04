@@ -41,6 +41,7 @@ export function useShareGame({ url, disableDuration = 3000 }: UseShareGameOption
 				})
 			}
 		} catch (error) {
+			console.error(error)
 			toast({
 				title: 'Failed to copy link',
 				description: 'An unexpected error occurred',
