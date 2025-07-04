@@ -13,7 +13,7 @@ export function SavedGamesFilters() {
 	if (games.length === 0) return null
 
 	return (
-		<div className={cn('flex flex-col')}>
+		<div className={cn('flex flex-col justify-center items-center')}>
 			<div ref={ref} className='h-0' />
 			<div
 				className={cn(
@@ -53,7 +53,7 @@ function Filters({ isIntersecting }: FiltersProps) {
 				}
 			}}
 			defaultValue={SortBy.LAST_ADDED}
-			className={cn('*:data-[slot=toggle-group-item]:!m-1 rounded-full', !isIntersecting ? '!bg-white/90' : '!bg-transparent')}
+			className={cn('rounded-full p-1', !isIntersecting ? '!bg-white/90' : '!bg-transparent')}
 		>
 			<FilterButton value={SortBy.LAST_ADDED}>Last added</FilterButton>
 			<FilterButton value={SortBy.NEWEST}>Newest</FilterButton>
@@ -67,13 +67,13 @@ interface FilterButtonProps {
 	children: React.ReactNode
 }
 
-function FilterButton({ value, children }: FilterButtonProps) {
+function FilterButton(props: FilterButtonProps) {
 	return (
 		<ToggleGroupItem
-			className='!px-6 !rounded-full transition-all duration-500 linear data-[state=on]:!bg-main data-[state=on]:!text-white data-[state=off]:!bg-transparent cursor-pointer data-[state=on]:!cursor-default'
-			value={value}
+			className='!rounded-full transition-all duration-500 linear data-[state=on]:!bg-main data-[state=on]:!text-white data-[state=off]:!bg-transparent cursor-pointer data-[state=on]:!cursor-default text-xs px-4 mx-0.5'
+			value={props.value}
 		>
-			{children}
+			{props.children}
 		</ToggleGroupItem>
 	)
 }
