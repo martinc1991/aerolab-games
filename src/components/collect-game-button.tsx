@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { TOAST_DURATION } from '@/config/constants'
 import { IGDBGameDetails } from '@/lib/igdb/types'
+import { cn } from '@/lib/utils'
 import { useCollectedGames } from '@/providers/collected-games'
 import { HTMLAttributes, useState } from 'react'
 import { useDebounceCallback } from 'usehooks-ts'
@@ -30,7 +31,12 @@ export function CollectGameButton({ className, ...props }: CollectGameButtonProp
 	}
 
 	return (
-		<Button variant={isCollected ? 'collected' : 'collect'} onClick={handleClick} className={className} disabled={isDisabled}>
+		<Button
+			variant={isCollected ? 'collected' : 'collect'}
+			onClick={handleClick}
+			className={cn('min-w-[200px]', className)}
+			disabled={isDisabled}
+		>
 			{isCollected ? 'Remove from collection' : 'Collect game'}
 		</Button>
 	)
