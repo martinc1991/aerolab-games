@@ -1,5 +1,5 @@
 import { Badge } from '@/components/badge'
-import { CollectGameButton } from '@/components/collect-game-button'
+import { GameActions } from '@/components/game-actions'
 import { GameImage } from '@/components/game-image'
 import { ScreenshotCarousel } from '@/components/screenshots-carousel'
 import { SimilarGames } from '@/components/similar-games'
@@ -106,12 +106,10 @@ export default async function GamePage({ params }: GamePageProps) {
 						<Typography.H1 className=''>{game.name}</Typography.H1>
 						{developer && <Typography.Muted className='text-sm text-[#775C90] leading-5'>{developer}</Typography.Muted>}
 					</div>
-					<CollectGameButton game={game} className='hidden sm:block w-[125px]' />
+					<GameActions game={game} className='hidden sm:flex w-[125px]' />
 				</div>
 			</div>
-			<div>
-				<CollectGameButton game={game} className='block sm:hidden w-full' />
-			</div>
+			<GameActions game={game} className='flex sm:hidden' />
 			<div className='flex gap-2 flex-wrap'>
 				<Badge icon={<StarIcon />} title='Rating' value={formatIGDBRating(game.rating)} />
 				<Badge icon={<CalendarIcon />} title='Release Date' value={formatIGDBTimestamp(game.first_release_date)} />
