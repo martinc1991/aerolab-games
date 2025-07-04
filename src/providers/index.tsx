@@ -3,7 +3,7 @@ import { TOAST_DURATION } from '@/config/constants'
 import { CollectedGamesProvider } from '@/providers/collected-games'
 import React from 'react'
 
-export async function RootProvider(props: { children: React.ReactNode }) {
+export function RootProvider(props: { children: React.ReactNode }) {
 	return (
 		<CollectedGamesProvider>
 			{props.children}

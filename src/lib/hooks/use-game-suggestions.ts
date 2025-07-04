@@ -1,3 +1,5 @@
+'use client'
+
 import { getPopularGameSuggestions, getRelatedGameSuggestions } from '@/lib/actions/game-actions'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { getRandomElement } from '@/lib/utils'

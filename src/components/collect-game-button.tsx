@@ -13,11 +13,11 @@ interface CollectGameButtonProps extends HTMLAttributes<HTMLButtonElement> {
 }
 
 export function CollectGameButton({ className, ...props }: CollectGameButtonProps) {
-	const { collectGame, isGameCollected, removeCollectedGame } = useCollectedGames()
+	const { collectGame, isGameCollected, removeCollectedGame, collectedGamesLoaded } = useCollectedGames()
 	const [isDisabled, setIsDisabled] = useState(false)
 	const debounceResetDisabled = useDebounceCallback(() => setIsDisabled(false), TOAST_DURATION)
 
-	const isCollected = isGameCollected(props.game.id)
+	const isCollected = collectedGamesLoaded ? isGameCollected(props.game.id) : false
 
 	async function handleClick() {
 		if (isCollected) {

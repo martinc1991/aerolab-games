@@ -1,3 +1,5 @@
+'use client'
+
 import { searchGameSuggestions } from '@/lib/actions/game-actions'
 import { IGDBGameSearchSuggestion } from '@/lib/igdb/types'
 import { useCollectedGames } from '@/providers/collected-games'
