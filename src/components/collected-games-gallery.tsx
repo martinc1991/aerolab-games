@@ -1,16 +1,19 @@
 'use client'
 
+import Loading from '@/app/loading'
 import { GalleryGame, GamesGallery } from '@/components/games-gallery'
 import { EmptyGames } from '@/components/svg/empty-games'
 import { Typography } from '@/components/typography'
 import { useCollectedGames } from '@/providers/collected-games'
 
 export function CollectedGamesGallery() {
-	const { games, removeCollectedGame } = useCollectedGames()
+	const { games, removeCollectedGame, collectedGamesLoaded } = useCollectedGames()
 
 	function handleDelete(game: GalleryGame) {
 		removeCollectedGame(game.id, game.name)
 	}
+
+	if (!collectedGamesLoaded) return <Loading />
 
 	return <GamesGallery games={games} onDelete={handleDelete} emptyState={<EmptyState />} priority />
 }

@@ -1,3 +1,5 @@
+'use client'
+
 import { SortBy, validSortBy } from '@/types'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'

@@ -15,6 +15,7 @@ export interface CollectedGamesState {
 	games: CollectedGame[]
 	defaultSuggestions: IGDBGameSearchSuggestion[]
 	isLoadingDefaultSuggestions: boolean
+	collectedGamesLoaded: boolean
 }
 
 export interface GamesActions {
@@ -51,6 +52,7 @@ function CollectedGamesProviderInner({ children }: { children: ReactNode }) {
 		collectGame: gameActions.collectGame,
 		removeCollectedGame: gameActions.removeCollectedGame,
 		isGameCollected: gameActions.isGameCollected,
+		collectedGamesLoaded: gameStorage.isLoaded,
 	}
 
 	return <CollectedGamesContext.Provider value={contextValue}>{children}</CollectedGamesContext.Provider>

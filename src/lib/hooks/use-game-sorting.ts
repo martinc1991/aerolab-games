@@ -1,3 +1,5 @@
+'use client'
+
 import { CollectedGame, SortBy } from '@/types'
 import { useMemo } from 'react'
 

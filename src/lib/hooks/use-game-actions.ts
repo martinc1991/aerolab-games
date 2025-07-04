@@ -1,3 +1,5 @@
+'use client'
+
 import { toast } from '@/components/toast'
 import { IGDBGameDetails } from '@/lib/igdb/types'
 import { useCallback } from 'react'

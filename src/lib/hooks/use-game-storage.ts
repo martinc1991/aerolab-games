@@ -2,23 +2,28 @@ import { LOCAL_STORAGE_COLLECTED_GAMES_KEY } from '@/config/constants'
 import { IGDBGameDetails } from '@/lib/igdb/types'
 import { CollectedGame } from '@/types'
 import { useCallback } from 'react'
-import { useLocalStorage } from 'usehooks-ts'
+import { useIsClient, useLocalStorage } from 'usehooks-ts'
 
 export interface UseCollectedGamesReturn {
 	games: CollectedGame[]
 	collectGame: (game: IGDBGameDetails) => boolean
 	removeCollectedGame: (gameId: number) => boolean
 	isGameCollected: (gameId: number) => boolean
+	isLoaded: boolean
 }
 
 /**
  * Custom hook for managing collected games using localStorage
  * Provides reactive state management for game collection with all CRUD operations
+ * Uses initializeWithValue: false to prevent SSR hydration mismatches
  *
  * @returns UseCollectedGamesReturn object with state and actions
  */
 export function useGameStorage(): UseCollectedGamesReturn {
-	const [collectedGames, setCollectedGames] = useLocalStorage<CollectedGame[]>(LOCAL_STORAGE_COLLECTED_GAMES_KEY, [])
+	const isClient = useIsClient()
+	const [collectedGames, setCollectedGames] = useLocalStorage<CollectedGame[]>(LOCAL_STORAGE_COLLECTED_GAMES_KEY, [], {
+		initializeWithValue: false,
+	})
 
 	const collectGame = useCallback(
 		(game: IGDBGameDetails): boolean => {
@@ -73,5 +78,6 @@ export function useGameStorage(): UseCollectedGamesReturn {
 		collectGame,
 		removeCollectedGame,
 		isGameCollected,
+		isLoaded: isClient,
 	}
 }

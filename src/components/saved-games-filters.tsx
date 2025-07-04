@@ -7,10 +7,10 @@ import { SortBy } from '@/types'
 import { useIntersectionObserver } from 'usehooks-ts'
 
 export function SavedGamesFilters() {
-	const { games } = useCollectedGames()
+	const { games, collectedGamesLoaded } = useCollectedGames()
 	const { isIntersecting, ref } = useIntersectionObserver({ threshold: 0.5, initialIsIntersecting: true })
 
-	if (games.length === 0) return null
+	if (games.length === 0 || !collectedGamesLoaded) return null
 
 	return (
 		<div className={cn('flex flex-col')}>

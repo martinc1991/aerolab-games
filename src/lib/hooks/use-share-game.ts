@@ -2,7 +2,7 @@
 
 import { toast } from '@/components/toast'
 import { useMemo, useState } from 'react'
-import { useCopyToClipboard, useDebounceCallback } from 'usehooks-ts'
+import { useCopyToClipboard, useDebounceCallback, useIsClient } from 'usehooks-ts'
 
 interface UseShareGameOptions {
 	url?: string
@@ -15,13 +15,14 @@ interface UseShareGameOptions {
  * @param {number} [props.disableDuration] - The duration to disable the button after copying the link.
  */
 export function useShareGame({ url, disableDuration = 3000 }: UseShareGameOptions = {}) {
+	const isClient = useIsClient()
 	const [isDisabled, setIsDisabled] = useState(false)
 	const [copiedText, copy] = useCopyToClipboard()
 	const debounceResetDisabled = useDebounceCallback(() => setIsDisabled(false), disableDuration)
 
 	const currentUrl = useMemo(() => {
-		return url || window.location.href
-	}, [url])
+		return url || (isClient ? window.location.href : '')
+	}, [url, isClient])
 
 	async function handleShare() {
 		setIsDisabled(true)
